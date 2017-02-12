@@ -5,7 +5,7 @@ var appRoot = require('app-root-path');
  *             Get Photo
  ***************************************/
 exports.getPhoto = function(req, res) {
-    var userid        = req.params.userid;
+    var userid      = req.params.userid;
     var clientid    = req.params.clientid;
     var photo       = req.params.photo
     res.sendFile(appRoot+'/storage/photos/'+userid+'/'+clientid+'/'+photo);
@@ -25,19 +25,19 @@ exports.savePhotos = function(req, res, clientid, userid) {
   if (!fs.existsSync(clientFolder))
       fs.mkdirSync(clientFolder);
 
-  var photo_front = req.files.photo_front, 
-      photo_left = req.files.photo_left, 
-      photo_right = req.files.photo_right, 
-      photo_back = req.files.photo_back;
+  var photofront = req.files.photofront, 
+      photoleft = req.files.photoleft, 
+      photoright = req.files.photoright, 
+      photoback = req.files.photoback;
 
-  if(photo_front)
-    savePhoto(photo_front, 'photo_front');
-  if(photo_left)
-    savePhoto(photo_left, 'photo_left');
-  if (photo_right)
-    savePhoto(photo_right, 'photo_right');
-  if (photo_back)
-    savePhoto(photo_back, 'photo_back');
+  if(photofront)
+    savePhoto(photofront, 'photofront');
+  if(photoleft)
+    savePhoto(photoleft, 'photoleft');
+  if (photoright)
+    savePhoto(photoright, 'photoright');
+  if (photoback)
+    savePhoto(photoback, 'photoback');
 
   function savePhoto(meow, name) {
     meow.mv(clientFolder + '/' + name + '.jpg', function(err) {

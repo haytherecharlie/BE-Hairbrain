@@ -10,8 +10,8 @@ exports.clientAdd = function(req, res) {
 
   // Create a new instance of the Client model
   var client = new Client();
-  client.first_name   = req.body.first_name;
-  client.last_name    = req.body.last_name;
+  client.firstname    = req.body.firstname;
+  client.lastname     = req.body.lastname;
   client.phone        = req.body.phone;
   client.email        = req.body.email;
   client.notes        = req.body.notes;
@@ -56,8 +56,8 @@ exports.clientEdit = function(req, res) {
 
       photoController.savePhotos(req, res, client._id, client.userid);
 
-      client.first_name   = req.body.first_name;
-      client.last_name    = req.body.last_name;
+      client.firstname   = req.body.firstname;
+      client.lastname    = req.body.lastname;
       client.phone        = req.body.phone;
       client.email        = req.body.email;
       client.notes        = req.body.notes;

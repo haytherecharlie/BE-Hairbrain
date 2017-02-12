@@ -14,17 +14,21 @@ var UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  firstname: {
+    type: String,
+    required: true
+  },
+  lastname : {
+    type: String,
+    required: true
+  },
   phone: {
-      type: Number,
+      type: String,
       required: true
   },
   salon: {
       type: String,
       required: true
-  },
-  rating: {
-      type: Number,
-      required: false
   }
 });
 UserSchema.plugin(uniqueValidator);

@@ -100,7 +100,13 @@ exports.clientAll = function(req, res) {
 function returnAllClients(res, userid) {
   Client.find({ userid: userid },function(err, clients) {
     if (err) res.send(err);
+
+    clients.sort(function(a, b) {
+        var y = a.firstname;
+        var z = b.firstname;
+        return y.localeCompare(z);
+    });
     
-    res.json(clients);; 
+    res.json(clients); 
   });
 }

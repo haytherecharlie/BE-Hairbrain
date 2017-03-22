@@ -1,10 +1,27 @@
-// Load required packages
+/*******************************************
+* © 2017 Hairbrain inc.
+* ---------------------
+* Created: February 11th 2017
+* Last Modified: March 21st 2017
+* Author: Charlie Hay
+*
+* USER MODEL
+/******************************************/
+
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
 var uniqueValidator = require('mongoose-unique-validator');
 
-// Define our user schema
+/**
+ *              UserSchema
+ * ----------------------------------------
+ *  The User Schema builds the structure, 
+ *  in which users are stored in the Mongo
+ *  Database. 
+ * ----------------------------------------
+ */
 var UserSchema = new mongoose.Schema({
+
   email: {
     type: String,
     unique: true,
@@ -30,34 +47,68 @@ var UserSchema = new mongoose.Schema({
       type: String,
       required: true
   }
+
 });
+
+// Ensure the Email Address is Unique.
 UserSchema.plugin(uniqueValidator);
 
-// Execute before each user.save() call
+/**
+ *              PreSave
+ * ----------------------------------------
+ *  Run this method to ensure the user's 
+ *  password remains up to date in the DB. 
+ * ----------------------------------------
+ */
 UserSchema.pre('save', function(callback) {
+
+  // Assign this to user. 
   var user = this;
 
   // Break out if the password hasn't changed
   if (!user.isModified('password')) return callback();
 
-  // Password changed so we need to hash it
+  // Hash changed password using bcrypt.
   bcrypt.genSalt(5, function(err, salt) {
+
+    // If error send to callback.
     if (err) return callback(err);
 
+    // Hash the password. 
     bcrypt.hash(user.password, salt, null, function(err, hash) {
+
+      // If error send to callback. 
       if (err) return callback(err);
+
+      // Set the password to the hash. 
       user.password = hash;
+
+      // Run the callback. 
       callback();
-    });
-  });
+    })
+  })
+
 });
 
-// Verify the password of the user account. 
+/**
+ *              VerifyPassword
+ * ----------------------------------------
+ *  Compare the password with it's hash to
+ *  authenticate User. 
+ * ----------------------------------------
+ */ 
 UserSchema.methods.verifyPassword = function(password, cb) {
+
+  // Compare the passwords. 
   bcrypt.compare(password, this.password, function(err, isMatch) {
+
+    // If error callback error. 
     if (err) return cb(err);
+
+    // Else, callback isMatch. 
     cb(null, isMatch);
-  });
+  })
+
 };
 
 // Export the Mongoose model

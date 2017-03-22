@@ -1,3 +1,13 @@
+/*******************************************
+* © 2017 Hairbrain inc.
+* ---------------------
+* Created: February 11th 2017
+* Last Modified: March 21st 2017
+* Author: Charlie Hay
+*
+* NODE SERVER
+/******************************************/
+
 var express          = require('express');
 var port             = process.env.PORT || 8080;
 var mongoose         = require('mongoose');
@@ -14,9 +24,11 @@ var configJWT		 = require('./config/jwt');
 var routes           = require('./app/routes/routes');
 var auth			 = require('./app/controllers/authController');
 
+// Connect to the MongoDB
 mongoose.connect(configDB.url);
 
-app.use(cors({origin: '*'}));
+// Set all modules used in app. 
+app.use(cors({origin: configCors.origin}));
 app.use(morgan('dev'));
 app.use(fileUpload());
 app.use(bodyParser.json({limit: '1mb'}));
@@ -26,5 +38,6 @@ app.use(expressJWT({secret: configJWT.secret}).unless({ path: configJWT.except }
 app.use(auth.authError);
 app.use(routes);
 
+// Start the Application!
 app.listen(port);
 console.log('Hairbrain started on port: ' + port);

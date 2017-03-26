@@ -9,6 +9,7 @@
 /******************************************/
 
 var fs      = require('fs');
+var im      = require('imagemagick');
 var appRoot = require('app-root-path');
 
 /**
@@ -85,8 +86,8 @@ exports.savePhotos = function(req, res, clientid, userid) {
     photo.mv(clientFolder + '/' + name + '.jpg', function(err) {
       
       // If an error exists print it to the console. 
-      if(err) 
-        console.error(err);
+      if(err) console.error(err);
+
     })
   }
 
@@ -109,7 +110,7 @@ exports.saveUserAvatars = function(req, res, userid) {
   // Assign params to variables. 
   var avatar = req.files.avatar; 
   var userFolder   = appRoot +'/storage/photos/' + userid;
-  var avatarFolder = userFolder + '/avatar';
+  var avatarFolder = userFolder + '/user-avatar';
 
   // Create User folder if needed. 
   if (!fs.existsSync(userFolder))
@@ -121,17 +122,51 @@ exports.saveUserAvatars = function(req, res, userid) {
 
   // If avatar is set, save it. 
   if(avatar)
-    saveUserAvatar(avatar, 'avatar');
+    saveUserAvatar(avatar, 'avatar', resizeAvatar());
 
   // Save User's avatar. 
-  function saveUserAvatar(photo, name) {
-    photo.mv(avatarFolder + '/' + name + '.jpg', function(err) {
-        
+  function saveUserAvatar(photo, name, callback) {
+
+    photo.mv(avatarFolder + '/temp-' + name + '.jpg', function(err) {    
+  
       // If an error exists print it to the console.
-      if (err) 
-        console.error(err);
+      if (err) console.error(err);
       
-    })
+    }, callback);
+
+  }
+
+  // Resize the User Avatar.
+  function resizeAvatar() {
+
+    // If the temp-avatar exists.
+    if(fs.existsSync(avatarFolder + '/temp-avatar.jpg')) {
+
+      var srcPath  = avatarFolder + '/temp-avatar.jpg';
+      var destPath = avatarFolder + '/avatar.jpg';
+
+      // ImageMagick Resize.
+      im.resize({
+        srcPath: srcPath,
+        dstPath: destPath,
+        height:  160
+      }, function(err, stdout, stderr){
+
+        // Throw Error. 
+        if (err) throw err;
+
+        // Delete Temp Photo.
+        fs.unlinkSync(srcPath);
+
+      });
+
+    } else {
+
+      // Wait 1 second and try again if Temp Avatar doesn't exist. 
+      setTimeout(function() {
+        resizeAvatar();
+      }, 1000);
+    }
   }
 
 };

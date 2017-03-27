@@ -65,31 +65,83 @@ exports.savePhotos = function(req, res, clientid, userid) {
       photoright = req.files.photoright, 
       photoback  = req.files.photoback;
 
-  // Save photofront. 
-  if(photofront)
-    savePhoto(photofront, 'photofront');
+    // Save the photo as a jpg to folder.
+  function savePhoto(photo, name, callback) {
 
-  // Save photoleft.
-  if(photoleft)
-    savePhoto(photoleft, 'photoleft');
-
-  // Save photoright.
-  if (photoright)
-    savePhoto(photoright, 'photoright');
-
-  // Save photoback. 
-  if (photoback)
-    savePhoto(photoback, 'photoback');
-
-  // Save the photo as a jpg to folder.
-  function savePhoto(photo, name) {
-    photo.mv(clientFolder + '/' + name + '.jpg', function(err) {
+    photo.mv(clientFolder + '/temp-' + name + '.jpg', function(err) {
       
       // If an error exists print it to the console. 
       if(err) console.error(err);
 
-    })
+    }, callback(name))
+
   }
+
+  function resizeImage(name) {
+
+    var srcPath    = clientFolder + '/temp-' + name + '.jpg',
+        destPath   = clientFolder + '/' + name + '.jpg',
+        avatarPath = clientFolder + '/avatar.jpg';
+
+    // If the temp-avatar exists.
+    if( fs.existsSync(srcPath) ) {
+
+      if (name === 'photofront') {
+        
+        // ImageMagick Resize.
+        im.resize({
+          srcPath: srcPath,
+          dstPath: avatarPath,
+          height:  160
+        }, function(err, stdout, stderr){
+          
+          // Throw Error. 
+          if (err) throw err;
+
+        });
+
+      }
+
+      // ImageMagick Resize.
+      im.resize({
+        srcPath: srcPath,
+        dstPath: destPath,
+        height:  600
+      }, function(err, stdout, stderr){
+
+        // Throw Error. 
+        if (err) throw err;
+
+        // Delete Temp Photo.
+        fs.unlinkSync(srcPath);
+
+      });
+
+    } else {
+
+      // Wait 1 second and try again.
+      setTimeout(function() {
+        console.log('trying again.');
+        resizeImage(name);
+      }, 1000);
+    }
+  }      
+
+    // Save photofront. 
+  if(photofront)
+    savePhoto(photofront, 'photofront', resizeImage);
+
+  // Save photoleft.
+  if(photoleft)
+    savePhoto(photoleft, 'photoleft', resizeImage);
+
+  // Save photoright.
+  if (photoright)
+    savePhoto(photoright, 'photoright', resizeImage);
+
+  // Save photoback. 
+  if (photoback)
+    savePhoto(photoback, 'photoback', resizeImage);
 
 };
 
@@ -139,11 +191,11 @@ exports.saveUserAvatars = function(req, res, userid) {
   // Resize the User Avatar.
   function resizeAvatar() {
 
-    // If the temp-avatar exists.
-    if(fs.existsSync(avatarFolder + '/temp-avatar.jpg')) {
-
       var srcPath  = avatarFolder + '/temp-avatar.jpg';
       var destPath = avatarFolder + '/avatar.jpg';
+
+    // If the temp-avatar exists.
+    if(fs.existsSync(srcPath)) {
 
       // ImageMagick Resize.
       im.resize({
@@ -162,7 +214,7 @@ exports.saveUserAvatars = function(req, res, userid) {
 
     } else {
 
-      // Wait 1 second and try again if Temp Avatar doesn't exist. 
+      // Wait 1 second and try again.
       setTimeout(function() {
         resizeAvatar();
       }, 1000);

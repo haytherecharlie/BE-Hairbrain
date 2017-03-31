@@ -93,7 +93,14 @@ exports.login = function(req, res) {
         var myToken = jwt.sign({email: req.body.email, password: req.body.password}, configJWT.secret, {expiresIn : '1d'});
 
         // Send the token to the Front End. 
-        res.status(200).json({ token: myToken, id: user._id });
+        res.status(200).json({ 
+          token: myToken, 
+          id: user._id, 
+          name: user.firstname + ' ' + user.lastname,
+          phone: user.phone,
+          email: user.email, 
+          salon: user.salon 
+        });
       }
     })
   })

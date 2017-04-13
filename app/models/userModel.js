@@ -24,7 +24,6 @@ var UserSchema = new mongoose.Schema({
 
   email: {
     type: String,
-    unique: true,
     required: true
   },
   password: {
@@ -41,6 +40,7 @@ var UserSchema = new mongoose.Schema({
   },
   phone: {
       type: String,
+      unique: true,
       required: true
   },
   salon: {

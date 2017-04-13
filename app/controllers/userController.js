@@ -69,7 +69,7 @@ exports.register = function(req, res) {
 exports.login = function(req, res) {
 
   // Find the user by their email address.
-  User.findOne({email: req.body.email}, function(err, user) {
+  User.findOne({phone: req.body.phone}, function(err, user) {
         
     // If there's an error send a 401.
     if (err) { res.status(401).send(); }
@@ -90,7 +90,7 @@ exports.login = function(req, res) {
       else {
 
         // Create a new JWT that lasts for 24 hours. 
-        var myToken = jwt.sign({email: req.body.email, password: req.body.password}, configJWT.secret, {expiresIn : '1d'});
+        var myToken = jwt.sign({phone: req.body.phone, password: req.body.password}, configJWT.secret, {expiresIn : '1d'});
 
         // Send the token to the Front End. 
         res.status(200).json({ 

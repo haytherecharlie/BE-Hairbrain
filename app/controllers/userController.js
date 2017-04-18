@@ -13,6 +13,7 @@ var photoController = require('./photoController.js');
 var configJWT       = require('../../config/jwt');
 var jwt             = require('jsonwebtoken');
 
+
 /**
  *              Register
  * ----------------------------------------
@@ -127,6 +128,7 @@ exports.profile = function(req, res) {
   })
 
 };
+
 
 /**
  *             IsLoggedIn

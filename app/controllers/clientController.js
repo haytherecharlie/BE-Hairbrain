@@ -12,6 +12,7 @@ var Client          = require('../models/clientModel');
 var photoController = require('./photoController.js');
 var appRoot         = require('app-root-path');
 
+
 /**
  *                ClientAdd
  * ----------------------------------------
@@ -29,17 +30,21 @@ exports.clientAdd = function(req, res) {
   client.notes     = req.body.notes;
   client.userid    = req.params.userid;
 
-  // Save the photos using the Photo Controller. 
-  photoController.savePhotos(req, res, client._id, client.userid);
-
   // Save the client.
   client.save(function(err) {
 
     // If an error exists send it in the response. 
     if (err) res.send(err);
 
-    // Return the clients to the Front End. 
-    returnAllClients(res, req.params.userid);
+      // Check for files. 
+      if (req.files) {
+        // Save the photos using the Photo Controller. 
+        photoController.savePhotos(req, res, client._id, client.userid);
+      } else {
+        // Return the clients to the Front End. 
+        exports.returnAllClients(res, client.userid);
+    }
+
   })
 
 };
@@ -71,7 +76,7 @@ exports.clientDelete = function(req, res) {
       res.send(err);
 
     // Return Clients to the Front End. 
-    returnAllClients(res, req.params.userid);
+    exports.returnAllClients(res, req.params.userid);
   })
 
 };
@@ -108,7 +113,7 @@ exports.clientEdit = function(req, res) {
       if (err) res.send(err);
 
       // Return Clients to the Front End.
-      returnAllClients(res, req.params.userid);
+      exports.returnAllClients(res, req.params.userid);
     })
   })
 
@@ -150,7 +155,7 @@ exports.clientAll = function(req, res) {
   var userid = req.params.userid;
 
   // Invoke returnAllClients method. 
-  returnAllClients(res, userid);
+  exports.returnAllClients(res, userid);
 
 };
 
@@ -163,7 +168,7 @@ exports.clientAll = function(req, res) {
  *  the front end in an alphabetized manner. 
  * ----------------------------------------
  */
-function returnAllClients(res, userid) {
+exports.returnAllClients = function(res, userid) {
 
   // Find the Client based on id. 
   Client.find({ userid: userid },function(err, clients) {

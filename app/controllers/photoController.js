@@ -8,9 +8,10 @@
 * PHOTO CONTROLLER
 /******************************************/
 
-var fs      = require('fs');
-var im      = require('imagemagick');
-var appRoot = require('app-root-path');
+var fs               = require('fs');
+var im               = require('imagemagick');
+var appRoot          = require('app-root-path');
+var clientController = require('./clientController.js');
 
 /**
  *                GetPhoto
@@ -47,9 +48,7 @@ exports.savePhotos = function(req, res, clientid, userid) {
   // Create photos path.
   var userFolder = appRoot +'/storage/photos/' + userid;
   var clientFolder = userFolder + '/' + clientid + '/';
-
-  // Check for files. 
-  if (!req.files) return;
+  var photosSaved = 0;
 
   // Create user folder if necessary.
   if (!fs.existsSync(userFolder))
@@ -65,7 +64,23 @@ exports.savePhotos = function(req, res, clientid, userid) {
       photoright = req.files.photoright, 
       photoback  = req.files.photoback;
 
-    // Save the photo as a jpg to folder.
+  // Save photofront. 
+  if(photofront)
+    savePhoto(photofront, 'photofront', resizeImage);
+
+  // Save photoleft.
+  if(photoleft)
+    savePhoto(photoleft, 'photoleft', resizeImage);
+
+  // Save photoright.
+  if (photoright)
+    savePhoto(photoright, 'photoright', resizeImage);
+
+  // Save photoback. 
+  if (photoback)
+    savePhoto(photoback, 'photoback', resizeImage);
+
+  // Save the photo as a jpg to folder.
   function savePhoto(photo, name, callback) {
 
     photo.mv(clientFolder + '/temp-' + name + '.jpg', function(err) {
@@ -114,6 +129,12 @@ exports.savePhotos = function(req, res, clientid, userid) {
 
         // Delete Temp Photo.
         fs.unlinkSync(srcPath);
+        photosSaved++;
+
+        if(photosSaved === 4) {
+          // Return the clients to the Front End. 
+          clientController.returnAllClients(res, userid);
+        }
 
       });
 
@@ -126,22 +147,6 @@ exports.savePhotos = function(req, res, clientid, userid) {
       }, 1000);
     }
   }      
-
-    // Save photofront. 
-  if(photofront)
-    savePhoto(photofront, 'photofront', resizeImage);
-
-  // Save photoleft.
-  if(photoleft)
-    savePhoto(photoleft, 'photoleft', resizeImage);
-
-  // Save photoright.
-  if (photoright)
-    savePhoto(photoright, 'photoright', resizeImage);
-
-  // Save photoback. 
-  if (photoback)
-    savePhoto(photoback, 'photoback', resizeImage);
 
 };
 

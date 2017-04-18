@@ -12,6 +12,7 @@ var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
 var uniqueValidator = require('mongoose-unique-validator');
 
+
 /**
  *              UserSchema
  * ----------------------------------------
@@ -53,6 +54,7 @@ var UserSchema = new mongoose.Schema({
 // Ensure the Email Address is Unique.
 UserSchema.plugin(uniqueValidator);
 
+
 /**
  *              PreSave
  * ----------------------------------------
@@ -89,6 +91,7 @@ UserSchema.pre('save', function(callback) {
   })
 
 });
+
 
 /**
  *              VerifyPassword

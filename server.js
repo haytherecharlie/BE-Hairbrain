@@ -28,11 +28,11 @@ var auth			 = require('./app/controllers/authController');
 mongoose.connect(configDB.url);
 
 // Set all modules used in app. 
-app.use(cors({origin: configCors.origin}));
 app.use(morgan('dev'));
 app.use(fileUpload());
-app.use(bodyParser.json({limit: '1mb'}));
+app.use(bodyParser.json({limit: '25mb'}));
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
 app.use(passport.initialize());
 app.use(expressJWT({secret: configJWT.secret}).unless({ path: configJWT.except }));
 app.use(auth.authError);

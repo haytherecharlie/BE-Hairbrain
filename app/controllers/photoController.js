@@ -9,7 +9,7 @@
 /******************************************/
 
 var fs               = require('fs');
-var im               = require('imagemagick');
+var gm               = require('gm');
 var appRoot          = require('app-root-path');
 var clientController = require('./clientController.js');
 
@@ -48,7 +48,6 @@ exports.savePhotos = function(req, res, clientid, userid) {
   // Create photos path.
   var userFolder = appRoot +'/storage/photos/' + userid;
   var clientFolder = userFolder + '/' + clientid + '/';
-  var photosSaved = 0;
 
   // Create user folder if necessary.
   if (!fs.existsSync(userFolder))
@@ -59,26 +58,12 @@ exports.savePhotos = function(req, res, clientid, userid) {
     fs.mkdirSync(clientFolder);
 
   // Assign params to variables. 
-  var photofront = req.files.photofront, 
-      photoleft  = req.files.photoleft, 
-      photoright = req.files.photoright, 
-      photoback  = req.files.photoback;
+  var photofront = req.files.photofront;
 
   // Save photofront. 
   if(photofront)
     savePhoto(photofront, 'photofront', resizeImage);
 
-  // Save photoleft.
-  if(photoleft)
-    savePhoto(photoleft, 'photoleft', resizeImage);
-
-  // Save photoright.
-  if (photoright)
-    savePhoto(photoright, 'photoright', resizeImage);
-
-  // Save photoback. 
-  if (photoback)
-    savePhoto(photoback, 'photoback', resizeImage);
 
   // Save the photo as a jpg to folder.
   function savePhoto(photo, name, callback) {
@@ -98,45 +83,40 @@ exports.savePhotos = function(req, res, clientid, userid) {
         destPath   = clientFolder + '/' + name + '.jpg',
         avatarPath = clientFolder + '/avatar.jpg';
 
-    // If the temp-avatar exists.
+    // If the temp-photo exists.
     if( fs.existsSync(srcPath) ) {
 
       if (name === 'photofront') {
         
-        // ImageMagick Resize.
-        im.resize({
-          srcPath: srcPath,
-          dstPath: avatarPath,
-          height:  160
-        }, function(err, stdout, stderr){
-          
+        // GraphicsMagick Resize.
+        gm(srcPath)
+        .autoOrient()
+        .resize(160)
+        .write(destPath, function(err) {
+
           // Throw Error. 
           if (err) throw err;
 
-        });
+        })
 
       }
 
       // ImageMagick Resize.
-      im.resize({
-        srcPath: srcPath,
-        dstPath: destPath,
-        height:  600
-      }, function(err, stdout, stderr){
+      gm(srcPath)
+      .autoOrient()
+      .resize(550)
+      .write(destPath, function(err) {
 
         // Throw Error. 
         if (err) throw err;
 
         // Delete Temp Photo.
         fs.unlinkSync(srcPath);
-        photosSaved++;
 
-        if(photosSaved === 4) {
-          // Return the clients to the Front End. 
-          clientController.returnAllClients(res, userid);
-        }
+        // Return the clients to the Front End. 
+        clientController.returnAllClients(res, userid);
 
-      });
+      })
 
     } else {
 
@@ -202,12 +182,11 @@ exports.saveUserAvatars = function(req, res, userid) {
     // If the temp-avatar exists.
     if(fs.existsSync(srcPath)) {
 
-      // ImageMagick Resize.
-      im.resize({
-        srcPath: srcPath,
-        dstPath: destPath,
-        height:  160
-      }, function(err, stdout, stderr){
+      // GraphicsMagick Resize.
+      gm(srcPath)
+      .autoOrient()
+      .resize(160)
+      .write(destPath, function(err) {
 
         // Throw Error. 
         if (err) throw err;
@@ -215,7 +194,7 @@ exports.saveUserAvatars = function(req, res, userid) {
         // Delete Temp Photo.
         fs.unlinkSync(srcPath);
 
-      });
+      })
 
     } else {
 

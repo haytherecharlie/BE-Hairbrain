@@ -47,8 +47,8 @@ exports.getPhoto = function(req, res) {
 exports.savePhotos = function(req, res, clientid, userid) {
 
   // Create photos path.
-  var userFolder = appRoot +'/storage/photos/' + userid;
-  var clientFolder = userFolder + '/' + clientid + '/';
+  var userFolder   = appRoot +'/storage/photos/' + userid;
+  var clientFolder = userFolder + '/' + clientid;
 
   // Create user folder if necessary.
   if (!fs.existsSync(userFolder))
@@ -59,26 +59,11 @@ exports.savePhotos = function(req, res, clientid, userid) {
     fs.mkdirSync(clientFolder);
 
   // Assign params to variables. 
-  var photofront = req.files.photofront, 
-      photoleft  = req.files.photoleft, 
-      photoright = req.files.photoright, 
-      photoback  = req.files.photoback;
+  var photofront = req.files.photofront;
 
   // Save photofront. 
   if(photofront)
     savePhoto(photofront, 'photofront', resizeImage);
-
-  // Save photoleft.
-  if(photoleft)
-    savePhoto(photoleft, 'photoleft', resizeImage);
-
-  // Save photoright.
-  if (photoright)
-    savePhoto(photoright, 'photoright', resizeImage);
-
-  // Save photoback. 
-  if (photoback)
-    savePhoto(photoback, 'photoback', resizeImage);
 
   // Save the photo as a jpg to folder.
   function savePhoto(photo, name, callback) {

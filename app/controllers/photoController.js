@@ -9,7 +9,8 @@
 /******************************************/
 
 var fs               = require('fs');
-var gm               = require('gm');
+var im               = require('imagemagick');
+var easyimg          = require('easyimage');
 var appRoot          = require('app-root-path');
 var clientController = require('./clientController.js');
 
@@ -58,12 +59,26 @@ exports.savePhotos = function(req, res, clientid, userid) {
     fs.mkdirSync(clientFolder);
 
   // Assign params to variables. 
-  var photofront = req.files.photofront;
+  var photofront = req.files.photofront, 
+      photoleft  = req.files.photoleft, 
+      photoright = req.files.photoright, 
+      photoback  = req.files.photoback;
 
   // Save photofront. 
   if(photofront)
     savePhoto(photofront, 'photofront', resizeImage);
 
+  // Save photoleft.
+  if(photoleft)
+    savePhoto(photoleft, 'photoleft', resizeImage);
+
+  // Save photoright.
+  if (photoright)
+    savePhoto(photoright, 'photoright', resizeImage);
+
+  // Save photoback. 
+  if (photoback)
+    savePhoto(photoback, 'photoback', resizeImage);
 
   // Save the photo as a jpg to folder.
   function savePhoto(photo, name, callback) {
@@ -83,40 +98,33 @@ exports.savePhotos = function(req, res, clientid, userid) {
         destPath   = clientFolder + '/' + name + '.jpg',
         avatarPath = clientFolder + '/avatar.jpg';
 
-    // If the temp-photo exists.
+    // If the temp-avatar exists.
     if( fs.existsSync(srcPath) ) {
 
-      if (name === 'photofront') {
-        
-        // GraphicsMagick Resize.
-        gm(srcPath)
-        .autoOrient()
-        .resize(160)
-        .write(destPath, function(err) {
+      easyimg.resize({
+        src: srcPath,
+        dst: destPath,
+        height: 550,
+        width: 550
+      }).then( function(img) {
+        console.log('success');
 
-          // Throw Error. 
+        easyimg.resize({
+          src: srcPath,
+          dst: avatarPath,
+          height: 160,
+          width: 160
+        }).then( function(img) {
+          fs.unlinkSync(srcPath);
+          clientController.returnAllClients(res, userid);
+        }, function(err) {
           if (err) throw err;
+        });
 
-        })
-
-      }
-
-      // ImageMagick Resize.
-      gm(srcPath)
-      .autoOrient()
-      .resize(550)
-      .write(destPath, function(err) {
-
-        // Throw Error. 
+      }, function(err) {
         if (err) throw err;
+      });
 
-        // Delete Temp Photo.
-        fs.unlinkSync(srcPath);
-
-        // Return the clients to the Front End. 
-        clientController.returnAllClients(res, userid);
-
-      })
 
     } else {
 
@@ -182,19 +190,16 @@ exports.saveUserAvatars = function(req, res, userid) {
     // If the temp-avatar exists.
     if(fs.existsSync(srcPath)) {
 
-      // GraphicsMagick Resize.
-      gm(srcPath)
-      .autoOrient()
-      .resize(160)
-      .write(destPath, function(err) {
-
-        // Throw Error. 
-        if (err) throw err;
-
-        // Delete Temp Photo.
-        fs.unlinkSync(srcPath);
-
-      })
+        easyimg.resize({
+          src: srcPath,
+          dst: destPath,
+          height: 160,
+          width: 160
+        }).then( function(img) {
+          fs.unlinkSync(srcPath);
+        }, function(err) {
+          if (err) throw err;
+        });
 
     } else {
 

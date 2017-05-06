@@ -40,13 +40,31 @@ var UserSchema = new mongoose.Schema({
     required: true
   },
   phone: {
-      type: String,
-      unique: true,
-      required: true
+    type: String,
+    unique: true,
+    required: true
   },
   salon: {
-      type: String,
-      required: true
+    type: String,
+    required: true
+  },
+  totalRating: {
+    type: Number,
+    required: true,
+    default: 0
+  },
+  unreadRatings: {
+    type: Number,
+    required: true,
+    default: 0 
+  },
+  rawRatings: { 
+    type: [{
+      date:     { type: Date, default: Date.now },
+      stars:    { type: Number },
+      comment:  { type: String },
+      clientid: { type: String }
+    }]
   }
 
 });

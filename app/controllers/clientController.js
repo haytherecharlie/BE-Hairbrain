@@ -8,9 +8,10 @@
 * CLIENT CONTROLLER
 /******************************************/
 
-var Client          = require('../models/clientModel');
-var photoController = require('./photoController.js');
-var appRoot         = require('app-root-path');
+var appRoot          = require('app-root-path');
+var Client           = require('../models/clientModel');
+var photoController  = require('./photoController.js');
+var ratingController = require('./ratingController.js');
 
 
 /**
@@ -30,19 +31,30 @@ exports.clientAdd = function(req, res) {
   client.notes     = req.body.notes;
   client.userid    = req.params.userid;
 
+  var name = req.body.name;
+
   // Save the client.
   client.save(function(err) {
 
     // If an error exists send it in the response. 
     if (err) res.send(err);
 
-      // Check for files. 
-      if (req.files) {
-        // Save the photos using the Photo Controller. 
-        photoController.savePhotos(req, res, client._id, client.userid);
-      } else {
-        // Return the clients to the Front End. 
-        exports.returnAllClients(res, client.userid);
+    ratingController.newRatingRequest(client.userid, client._id, name);
+
+    // Files Exist. 
+    if (req.files) {
+
+      // Save the photos using the Photo Controller. 
+      photoController.savePhotos(req, res, client._id, client.userid);
+
+    } 
+
+    // No Files.
+    else {
+
+      // Return the clients to the Front End. 
+      exports.returnAllClients(res, client.userid);
+
     }
 
   })
@@ -72,11 +84,11 @@ exports.clientDelete = function(req, res) {
   Client.findByIdAndRemove(req.params.clientid, function(err) {
 
     // If an error exists send it in the response.
-    if (err)
-      res.send(err);
+    if (err) res.send(err);
 
     // Return Clients to the Front End. 
     exports.returnAllClients(res, req.params.userid);
+
   })
 
 };
@@ -114,7 +126,9 @@ exports.clientEdit = function(req, res) {
 
       // Return Clients to the Front End.
       exports.returnAllClients(res, req.params.userid);
+
     })
+
   })
 
 };
@@ -137,6 +151,7 @@ exports.clientProfile = function(req, res) {
 
     // Send the Client JSON to the Front End. 
     res.json(client);
+
   })
 
 };
@@ -185,6 +200,7 @@ exports.returnAllClients = function(res, userid) {
     
     // Send the Clients JSON to the Front End. 
     res.json(clients); 
+
   })
 
 }

@@ -11,9 +11,16 @@
 var clientController  = require('../controllers/clientController'),
     photoController   = require('../controllers/photoController'),
     userController    = require('../controllers/userController'),
+    ratingController  = require('../controllers/ratingController'),
     authController    = require('../controllers/authController'),
     express           = require('express'),
     router            = express.Router();
+
+    /*------------------------------------------------------
+
+                        USER API ENDPOINTS
+
+    ------------------------------------------------------*/
 
     // Register User
     router.route('/register')
@@ -23,13 +30,19 @@ var clientController  = require('../controllers/clientController'),
     router.route('/login')
     .post(userController.login);
 
-    // Check Loggedin Status
+    // Check Login Status
     router.route('/check')
     .get(userController.isLoggedIn);
 
     // User Profile
     router.route('/profile/:userid')
     .get(userController.profile);
+
+    /*------------------------------------------------------
+
+                       CLIENT API ENDPOINTS
+
+    ------------------------------------------------------*/
 
     // Get All Clients
     router.route('/client/all/:userid')
@@ -51,8 +64,28 @@ var clientController  = require('../controllers/clientController'),
     router.route('/client/delete/:userid/:clientid') 
     .delete(clientController.clientDelete);
 
+    /*------------------------------------------------------
+
+                       PHOTO API ENDPOINTS
+
+    ------------------------------------------------------*/
+
     // Get Photos
     router.route('/photo/:userid/:clientid/:photo') 
     .get(photoController.getPhoto);
+
+    /*------------------------------------------------------
+
+                       RATING API ENDPOINTS
+
+    ------------------------------------------------------*/
+
+    // New User Rating
+    router.route('/rating/:userid/:clientid/') 
+    .post(ratingController.addRating);
+
+    // Verify Rating Request ID
+    router.route('/rating/verify/:id')
+    .get(ratingController.verifyRatingRequest);
 
 module.exports = router;

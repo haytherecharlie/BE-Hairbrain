@@ -33,13 +33,16 @@ exports.register = function(req, res) {
   if (!req.files)          { res.status(401).send(); return false; }
 
   // Create a new User from the User Model.
-  var user       = new User()
-  user.email     = req.body.email,
-  user.password  = req.body.password,
-  user.firstname = req.body.firstname,
-  user.lastname  = req.body.lastname,
-  user.phone     = req.body.phone,
-  user.salon     = req.body.salon
+  var user           = new User();
+  user.email         = req.body.email,
+  user.password      = req.body.password,
+  user.firstname     = req.body.firstname,
+  user.lastname      = req.body.lastname,
+  user.phone         = req.body.phone,
+  user.salon         = req.body.salon
+  user.totalRating   = 0,
+  user.unreadRatings = 0,
+  user.rawRatings    = []
 
   // Save the user and their photos.
   user.save(function(err) {
@@ -69,7 +72,7 @@ exports.register = function(req, res) {
  */
 exports.login = function(req, res) {
 
-  // Find the user by their email address.
+  // Find the user by their Phone Number.
   User.findOne({phone: req.body.phone}, function(err, user) {
         
     // If there's an error send a 401.
@@ -100,7 +103,8 @@ exports.login = function(req, res) {
           name: user.firstname + ' ' + user.lastname,
           phone: user.phone,
           email: user.email, 
-          salon: user.salon 
+          salon: user.salon, 
+          rating: user.rating
         });
       }
     })

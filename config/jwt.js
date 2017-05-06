@@ -11,5 +11,10 @@
 // Set the secret and unprotected paths. 
 module.exports = {
     'secret'   : 'montreal 2030 rue du fort',
-    'except'   : [new RegExp('/login'), new RegExp('/register'), new RegExp('/photo.*/', 'i')]
+    'except'   : [
+    	new RegExp('/login'), 
+    	new RegExp('/register'), 
+    	new RegExp('/photo.*/', 'i'),
+    	new RegExp('/rating.*/', 'i')
+    ]
 };

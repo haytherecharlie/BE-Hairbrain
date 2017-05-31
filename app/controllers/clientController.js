@@ -39,7 +39,7 @@ exports.clientAdd = function(req, res) {
     // If an error exists send it in the response. 
     if (err) res.send(err);
 
-    ratingController.newRatingRequest(client.userid, client._id, name);
+    ratingController.newRatingRequest(client.userid, client._id, name, client.phone);
 
     // Files Exist. 
     if (req.files) {

@@ -18,7 +18,8 @@
     "mongoose-unique-validator": "1.0.3",
     "morgan": "1.8.1",
     "passport": "~0.3.2",
-    "passport-http": "0.3.0"
+    "passport-http": "0.3.0",
+    "twilio": "3.0.0"
   },
   "repository": {
     "type": "git",

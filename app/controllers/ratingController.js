@@ -8,8 +8,9 @@
 * RATING CONTROLLER
 /******************************************/
 
-var Rating = require('../models/ratingModel');
-var User   = require('../models/userModel');
+var Rating           = require('../models/ratingModel');
+var User             = require('../models/userModel');
+var twilioController = require('../controllers/twilioController');
 
 /**
  *                addRating
@@ -61,13 +62,14 @@ exports.addRating = function(req, res) {
  *  Request a rating from the client. 
  * ----------------------------------------
  */
-exports.newRatingRequest = function(userid, clientid, name) {
+exports.newRatingRequest = function(userid, clientid, name, phone) {
 
   // New Ratings Object
   var rating      = new Rating();
   rating.userid   = userid;
   rating.clientid = clientid;
   rating.name     = name;
+  rating.phone    = phone;
 
   // Save the user and their photos.
   rating.save(function(err) {
@@ -83,6 +85,7 @@ exports.newRatingRequest = function(userid, clientid, name) {
     // Else save the user.
     else {
 
+      twilioController.sendTwilioSMS(rating.phone, 'Charlie Hay', rating._id);
       // Return rating object. 
       return rating;
 

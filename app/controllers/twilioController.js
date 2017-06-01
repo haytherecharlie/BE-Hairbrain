@@ -25,7 +25,7 @@ exports.sendTwilioSMS = function(recipientNumber, stylist, ratingid) {
 
 	client.messages.create({ 
 	    to:   recipientNumber, 
-	    from: alphanumericId, 
+	    from: +14387956366, 
 	    body: "Looking good! You just had a hair appointment with " + stylist + 
 	    	  ". Please take a moment and rate your experience." +
 	    	  "https://www.hairbrain.ca/rating/?=" + ratingid, 
@@ -34,13 +34,7 @@ exports.sendTwilioSMS = function(recipientNumber, stylist, ratingid) {
 	function(error, message) { 
   	
   		if(error.code == 21612) {
-		    client.messages.create({
-		      from: twilioNumber,
-		      to:   recipientNumber,
-		      body: "Looking good! You just had a hair appointment with " + stylist + 
-	    			". Please take a moment and rate your experience." + 
-	    			"https://www.hairbrain.ca/rating/?=" + ratingid,
-		    })
+
 		}
 
 	});

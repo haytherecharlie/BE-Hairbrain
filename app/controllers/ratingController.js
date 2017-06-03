@@ -86,7 +86,7 @@ exports.newRatingRequest = function(userid, clientid, name, phone) {
     else {
       
       // Trial Account
-      if(userid === '59307f72c4543625d7b13187' && phone !== '1 (438) 880-5966'){
+      if(userid === '59307f72c4543625d7b13187' && phone === '1 (519) 657-9849'){
         console.log('TRIAL USER TEXT SENT!')
         return rating;
       } else {

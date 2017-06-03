@@ -84,11 +84,16 @@ exports.newRatingRequest = function(userid, clientid, name, phone) {
 
     // Else save the user.
     else {
-
-      twilioController.sendTwilioSMS(rating.phone, 'Charlie Hay', rating._id);
-      // Return rating object. 
-      return rating;
-
+      
+      // Trial Account
+      if(userid === '593060a1965dd805334b6467' && phone !== '1 (438) 880-5966'){
+        console.log('TRIAL USER TEXT SENT!')
+        return rating;
+      } else {
+        twilioController.sendTwilioSMS(phone, name, rating._id);
+        console.log('REAL TEXT SENT!')
+        return rating;
+      }
     }
 
   })

@@ -21,27 +21,11 @@ var client = require('twilio')(accountSid, authToken);
  
 exports.sendTwilioSMS = function(recipientNumber, stylist, ratingid) {
 
-	console.log(recipientNumber);
-
-	client.messages.create({ 
-	    to:   recipientNumber, 
-	    from: alphanumericId, 
-	    body: "Looking good! You just had a hair appointment with " + stylist + 
-	    	  ". Please take a moment and rate your experience." +
-	    	  "https://www.hairbrain.ca/rating/?=" + ratingid, 
-	}, 
-
-	function(error, message) { 
-  	
-  		if(error.code == 21612) {
-		    client.messages.create({
-		      from: twilioNumber,
-		      to:   recipientNumber,
-		      body: "Looking good! You just had a hair appointment with " + stylist + 
-	    			". Please take a moment and rate your experience." + 
-	    			"https://www.hairbrain.ca/rating/?=" + ratingid,
-		    })
-		}
-
-	});
+	client.messages.create({
+	  from: twilioNumber,
+	  to:   recipientNumber,
+	  body: "Looking good! You just had a hair appointment with " + stylist + 
+			". Please take a moment and rate your experience." + 
+			"https://www.hairbrain.ca/rating/?=" + ratingid,
+	})
 }

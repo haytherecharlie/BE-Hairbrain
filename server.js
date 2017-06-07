@@ -8,8 +8,8 @@
 * NODE SERVER
 /******************************************/
 
-var express          = require('express');
 var port             = process.env.PORT || 8080;
+var express          = require('express');
 var mongoose         = require('mongoose');
 var passport         = require('passport');
 var fileUpload       = require('express-fileupload');

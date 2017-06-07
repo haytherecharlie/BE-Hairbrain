@@ -34,9 +34,25 @@ exports.getPhoto = function(req, res) {
 
 };
 
+/**
+ *                GetAvatar
+ * ----------------------------------------
+ *  Takes: userid and photoid as params and 
+ *  returns the profile picture. 
+ * ----------------------------------------
+ */
+exports.getAvatar = function(req, res) {
+
+  // Assign params to variables. 
+  var userid    = req.params.userid;
+
+  // Send the image based on the path. 
+  res.sendFile(appRoot+'/storage/photos/'+userid+'/user-avatar/avatar.jpg');
+};
+
 
 /**
- *               SavePhotos
+ *               SavePhoto
  * ----------------------------------------
  *  Takes: userid, clientid, and req as
  *  arguments, checks for files in req, 
@@ -44,7 +60,7 @@ exports.getPhoto = function(req, res) {
  *  saves the photos in the users folder. 
  * ----------------------------------------
  */
-exports.savePhotos = function(req, res, clientid, userid) {
+exports.savePhoto = function(req, res, clientid, userid) {
 
   // Create photos path.
   var userFolder   = appRoot +'/storage/photos/' + userid;
@@ -59,11 +75,11 @@ exports.savePhotos = function(req, res, clientid, userid) {
     fs.mkdirSync(clientFolder);
 
   // Assign params to variables. 
-  var photofront = req.files.photofront;
+  var photo = req.files.photo;
 
   // Save photofront. 
-  if(photofront)
-    savePhoto(photofront, 'photofront', resizeImage);
+  if(photo)
+    savePhoto(photo, 'photo', resizeImage);
 
   // Save the photo as a jpg to folder.
   function savePhoto(photo, name, callback) {
@@ -71,7 +87,7 @@ exports.savePhotos = function(req, res, clientid, userid) {
     photo.mv(clientFolder + '/temp-' + name + '.jpg', function(err) {
       
       // If an error exists print it to the console. 
-      if(err) console.error(err);
+      if(err) res.status(401).send();
 
     }, callback(name))
 
@@ -103,11 +119,11 @@ exports.savePhotos = function(req, res, clientid, userid) {
           fs.unlinkSync(srcPath);
           clientController.returnAllClients(res, userid);
         }, function(err) {
-          if (err) throw err;
+          if (err) res.status(401).send();;
         });
 
       }, function(err) {
-        if (err) throw err;
+        if (err) res.status(401).send();;
       });
 
 
@@ -132,10 +148,10 @@ exports.savePhotos = function(req, res, clientid, userid) {
  *  profile. 
  * ----------------------------------------
  */
-exports.saveUserAvatars = function(req, res, userid) {
+exports.saveUserAvatar = function(req, res, userid) {
 
   // Check for files. 
-  if (!req.files) return;
+  if (!req.files) res.status(401).send();
 
   // Assign params to variables. 
   var avatar = req.files.avatar; 
@@ -160,7 +176,7 @@ exports.saveUserAvatars = function(req, res, userid) {
     photo.mv(avatarFolder + '/temp-' + name + '.jpg', function(err) {    
   
       // If an error exists print it to the console.
-      if (err) console.error(err);
+      if (err) res.status(401).send();
       
     }, callback);
 
@@ -182,8 +198,9 @@ exports.saveUserAvatars = function(req, res, userid) {
           width: 160
         }).then( function(img) {
           fs.unlinkSync(srcPath);
+          res.status(200).send();
         }, function(err) {
-          if (err) throw err;
+          if (err) res.status(401).send();
         });
 
     } else {

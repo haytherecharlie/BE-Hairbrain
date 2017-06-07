@@ -74,6 +74,10 @@ var clientController  = require('../controllers/clientController'),
     router.route('/photo/:userid/:clientid/:photo') 
     .get(photoController.getPhoto);
 
+    // Get Avatar
+    router.route('/photo/:userid/') 
+    .get(photoController.getAvatar);
+
     /*------------------------------------------------------
 
                        RATING API ENDPOINTS

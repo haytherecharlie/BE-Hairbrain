@@ -25,7 +25,7 @@ exports.sendTwilioSMS = function(recipientNumber, stylist, ratingid) {
 	  from: twilioNumber,
 	  to:   recipientNumber,
 	  body: "Looking good! You just had a hair appointment with " + stylist + 
-			". Please take a moment and rate your experience below." + 
+			". Please take a moment and rate your experience below. " + 
 			"https://www.hairbrain.ca/rating/?id=" + ratingid,
 	})
 }

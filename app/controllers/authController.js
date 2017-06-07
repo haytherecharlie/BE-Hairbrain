@@ -19,7 +19,6 @@
 exports.authError = function (err, req, res, next) { 
 
   // If the error is 'UnauthorizedError' send 401. 
-  if(err.name === 'UnauthorizedError') 
-  	res.send(401, err)
+  if(err.name === 'UnauthorizedError') res.status(401).send();
 
 };

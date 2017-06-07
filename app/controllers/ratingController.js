@@ -34,7 +34,7 @@ exports.addRating = function(req, res) {
 
     count = user.rawRatings.length;
 
-    for( var i = 0; i < count; i++ ) {
+    for (var i = 0; i < count; i++) {
       total += user.rawRatings[i].stars;
     }
 
@@ -43,12 +43,9 @@ exports.addRating = function(req, res) {
     user.save(function(err) {
 
         // If an error exists send it in the response.
-        if (err) res.send(err);
+        if (err) res.status(401).send();
 
         exports.deleteRatingRequest(req.body.id);
-
-        // Send user as a response !!! CHANGE THIS!
-        res.json(user);
     })
 
   });
@@ -75,12 +72,7 @@ exports.newRatingRequest = function(userid, clientid, name, phone) {
   rating.save(function(err) {
 
     // If an error exists send it in the response. 
-    if (err) { 
-
-      // Return error.
-      return err; 
-
-    }
+    if (err) res.status(401).send();
 
     // Else save the user.
     else {
@@ -113,11 +105,11 @@ exports.deleteRatingRequest = function(id) {
   Rating.findByIdAndRemove(id, function(err) {
 
     // If an error exists send it in the response.
-    if (err) return err;
+    if (err) res.status(401).send();
 
     // Send 200 if successful.
-    return false;
-
+    res.status(200).send();
+    
   })
 
 }
@@ -133,11 +125,11 @@ exports.verifyRatingRequest = function(req, res) {
 
   Rating.findById(req.params.id, function(err, rating) {
 
-    // If an error exists send it in the response. 
-    if (err) res.send(404);
+    // If an error exists send 400. 
+    if (err) res.send(401);
 
     // Return the rating object. 
-    res.send(rating);
+    res.status(200).send(rating);
 
   })
 

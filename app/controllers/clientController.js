@@ -24,6 +24,7 @@ var ratingController = require('./ratingController.js');
 exports.clientAdd = function(req, res) {
 
   // Create a new instance of the Client model.
+  var name         = req.body.name;
   var client       = new Client();
   client.firstname = req.body.firstname;
   client.lastname  = req.body.lastname;
@@ -31,13 +32,11 @@ exports.clientAdd = function(req, res) {
   client.notes     = req.body.notes;
   client.userid    = req.params.userid;
 
-  var name = req.body.name;
-
   // Save the client.
   client.save(function(err) {
 
-    // If an error exists send it in the response. 
-    if (err) res.send(err);
+    // Client wasn't saved. 
+    if (err) res.status(401).send();
 
     ratingController.newRatingRequest(client.userid, client._id, name, client.phone);
 
@@ -45,15 +44,15 @@ exports.clientAdd = function(req, res) {
     if (req.files) {
 
       // Save the photos using the Photo Controller. 
-      photoController.savePhotos(req, res, client._id, client.userid);
+      photoController.savePhoto(req, res, client._id, client.userid);
 
     } 
 
     // No Files.
     else {
 
-      // Return the clients to the Front End. 
-      exports.returnAllClients(res, client.userid);
+      // Return Error. No Photo. 
+      res.status(401).send();
 
     }
 
@@ -84,7 +83,7 @@ exports.clientDelete = function(req, res) {
   Client.findByIdAndRemove(req.params.clientid, function(err) {
 
     // If an error exists send it in the response.
-    if (err) res.send(err);
+    if (err) res.status(401).send();
 
     // Return Clients to the Front End. 
     exports.returnAllClients(res, req.params.userid);
@@ -106,10 +105,7 @@ exports.clientEdit = function(req, res) {
   Client.findById(req.params.clientid, function(err, client) {
 
     // If an error exists send it in the response. 
-    if (err) res.send(err);
-
-    // Save any new photos to their directory. 
-    photoController.savePhotos(req, res, client._id, client.userid);
+    if (err) res.status(401).send();
 
     // Assign params to variables. 
     client.firstname = req.body.firstname;
@@ -122,10 +118,10 @@ exports.clientEdit = function(req, res) {
     client.save(function(err) {
 
       // If an error exists send it in the response.
-      if (err) res.send(err);
+      if (err) res.status(401).send();
 
-      // Return Clients to the Front End.
-      exports.returnAllClients(res, req.params.userid);
+    // Save any new photos to their directory. 
+    photoController.savePhoto(req, res, client._id, client.userid);
 
     })
 
@@ -147,10 +143,10 @@ exports.clientProfile = function(req, res) {
   Client.findById(req.params.clientid, function(err, client) {
 
     // If an error exists send it in the response.
-    if (err)res.send(err);
+    if (err) res.status(401).send();
 
     // Send the Client JSON to the Front End. 
-    res.json(client);
+    res.status(200).json(client);
 
   })
 
@@ -189,7 +185,7 @@ exports.returnAllClients = function(res, userid) {
   Client.find({ userid: userid },function(err, clients) {
 
     // If an error exists send it in the response.
-    if (err) res.send(err);
+    if (err) res.status(401).send();
 
     // Sort the clients alphabetically. 
     clients.sort(function(a, b) {
@@ -199,7 +195,7 @@ exports.returnAllClients = function(res, userid) {
     });
     
     // Send the Clients JSON to the Front End. 
-    res.json(clients); 
+    res.status(200).json(clients); 
 
   })
 

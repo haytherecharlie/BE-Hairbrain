@@ -48,17 +48,16 @@ exports.register = function(req, res) {
   user.save(function(err) {
 
     // If an error exists send it in the response. 
-    if (err) { res.send(err); }
+    if (err) { res.status(401).send(); }
 
     // Else save the user.
     else {
 
       // Save the avatar. 
-      photoController.saveUserAvatars(req, res, user._id);
+      photoController.saveUserAvatar(req, res, user._id);
 
-      // Return user json to the Front End. 
-      res.json(user);
     }
+
   })
 
 }
@@ -104,7 +103,7 @@ exports.login = function(req, res) {
           phone: user.phone,
           email: user.email, 
           salon: user.salon, 
-          rating: user.rating
+          rating: user.totalRating,
         });
       }
     })

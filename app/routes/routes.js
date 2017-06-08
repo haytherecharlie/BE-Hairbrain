@@ -16,6 +16,7 @@ var clientController  = require('../controllers/clientController'),
     express           = require('express'),
     router            = express.Router();
 
+
     /*------------------------------------------------------
 
                         USER API ENDPOINTS
@@ -34,9 +35,6 @@ var clientController  = require('../controllers/clientController'),
     router.route('/check')
     .get(userController.isLoggedIn);
 
-    // User Profile
-    router.route('/profile/:userid')
-    .get(userController.profile);
 
     /*------------------------------------------------------
 
@@ -64,6 +62,7 @@ var clientController  = require('../controllers/clientController'),
     router.route('/client/delete/:userid/:clientid') 
     .delete(clientController.clientDelete);
 
+
     /*------------------------------------------------------
 
                        PHOTO API ENDPOINTS
@@ -77,6 +76,7 @@ var clientController  = require('../controllers/clientController'),
     // Get Avatar
     router.route('/avatar/:userid/') 
     .get(photoController.getAvatar);
+
 
     /*------------------------------------------------------
 
@@ -92,7 +92,9 @@ var clientController  = require('../controllers/clientController'),
     router.route('/rating/verify/:id')
     .get(ratingController.verifyRatingRequest);
 
+    // Get Stylist Rating
     router.route('/rating/:userid')
     .get(ratingController.getRating);
+
 
 module.exports = router;

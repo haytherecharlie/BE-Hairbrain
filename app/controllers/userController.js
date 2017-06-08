@@ -124,27 +124,6 @@ exports.login = function(req, res) {
 
 
 /**
- *                Profile
- * ----------------------------------------
- * Get the user's profile information. 
- *-----------------------------------------
- */
-exports.profile = function(req, res) {
-
-  // Use the User model to find a specific user
-  User.findById(req.params.userid, function(err, user) {
-    
-    // If there is an error, send the error. 
-    if (err)res.send(err);
-
-    // Send the user JSON to the Front End.
-    res.json(user);
-  })
-
-};
-
-
-/**
  *             IsLoggedIn
  * ----------------------------------------
  * Check if the user is logged in already. 
@@ -156,3 +135,4 @@ exports.isLoggedIn = function(req, res) {
   res.status(200).send();
 
 };
+

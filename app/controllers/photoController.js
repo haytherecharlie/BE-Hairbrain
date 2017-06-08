@@ -191,9 +191,8 @@ exports.saveUserAvatar = function(avatar, res, userid) {
     } else {
 
       // Wait 1 second and try again.
-      setTimeout(function() {
-        resizeAvatar();
-      }, 1000);
+      setTimeout(function() { resizeAvatar(); }, 1000);
+      
     }
   }
 
@@ -219,11 +218,12 @@ exports.deleteFolderRecursive = function(path) {
       // Assign path to file to variable. 
       var curPath = path + "/" + file;
 
-      // Recursive deletions. 
-      if(fs.lstatSync(curPath).isDirectory())
-        deleteFolderRecursive(curPath);
-      else
-        fs.unlinkSync(curPath);
+      // Recursive delete folder.  
+      if(fs.lstatSync(curPath).isDirectory()) { deleteFolderRecursive(curPath); }
+
+      // Unlink folder path. 
+      else { fs.unlinkSync(curPath); }
+
     })
 
     // Remove the directory

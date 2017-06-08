@@ -2,7 +2,7 @@
 * © 2017 Hairbrain inc.
 * ---------------------
 * Created: February 11th 2017
-* Last Modified: March 21st 2017
+* Last Modified: June 8th 2017
 * Author: Charlie Hay
 *
 * USER CONTROLLER
@@ -18,13 +18,14 @@ var jwt             = require('jsonwebtoken');
  *              Register
  * ----------------------------------------
  * Register the user by adding their credentials
- * to the USER Schema in MongoDB.
+ * to the USER Schema in MongoDB, and save profile
+ * picture using the photoController.
  *-----------------------------------------
  */
 exports.register = function(req, res) {
 
   // Check that a profile picture is included. 
-  if (!req.files) { res.status(400).send('You forgot to take a profile picture.'); return false; }
+  if (!req.files.avatar) { res.status(400).send('You forgot to take a profile picture.'); return false; }
 
   // Check that first name exists.
   if (!req.body.firstname) { res.status(400).send('You forgot to include your first name.'); return false; }
@@ -66,11 +67,8 @@ exports.register = function(req, res) {
     // If User already exists, send 400. 
     if (err) { res.status(400).send(user.phone + ' is already a registered phone number. Please contact us if you believe this is an error.'); return false; }
 
-    // Else send 200 response. 
-    else { res.status(200).send('You have been successfully registered.'); return false; }
-
-    // Save the avatar. Send req, res and user Mongo User ID. 
-    photoController.saveUserAvatar(req, res, user._id);
+    // Else save avatar. 
+    else { photoController.saveUserAvatar(req.files.avatar, res, user._id); }
 
   })
 

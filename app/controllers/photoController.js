@@ -2,14 +2,13 @@
 * © 2017 Hairbrain inc.
 * ---------------------
 * Created: February 11th 2017
-* Last Modified: March 21st 2017
+* Last Modified: June 8th 2017
 * Author: Charlie Hay
 *
 * PHOTO CONTROLLER
 /******************************************/
 
 var fs               = require('fs');
-var im               = require('imagemagick');
 var easyimg          = require('easyimage');
 var appRoot          = require('app-root-path');
 var clientController = require('./clientController.js');
@@ -87,7 +86,7 @@ exports.savePhoto = function(req, res, clientid, userid) {
     photo.mv(clientFolder + '/temp-' + name + '.jpg', function(err) {
       
       // If an error exists print it to the console. 
-      if(err) res.status(401).send();
+      if(err) res.status(400).send('Error saving user, please try again.');
 
     }, callback(name))
 
@@ -148,39 +147,25 @@ exports.savePhoto = function(req, res, clientid, userid) {
  *  profile. 
  * ----------------------------------------
  */
-exports.saveUserAvatar = function(req, res, userid) {
+exports.saveUserAvatar = function(avatar, res, userid) {
 
-  // Check for files. 
-  if (!req.files) res.status(401).send();
-
-  // Assign params to variables. 
-  var avatar       = req.files.avatar; 
+  // Assign variables. 
   var userFolder   = appRoot +'/storage/photos/' + userid;
   var avatarFolder = userFolder + '/user-avatar';
 
   // Create User folder if needed. 
-  if (!fs.existsSync(userFolder))
-    fs.mkdirSync(userFolder);
+  if (!fs.existsSync(userFolder)) { fs.mkdirSync(userFolder); }
 
   // Create Avatar folder if needed. 
-  if (!fs.existsSync(avatarFolder))
-    fs.mkdirSync(avatarFolder);
+  if (!fs.existsSync(avatarFolder)) { fs.mkdirSync(avatarFolder); }
 
-  // If avatar is set, save it. 
-  if(avatar)
-    saveUserAvatar(avatar, 'avatar', resizeAvatar());
+  // Move the avatar to a temp folder then call resize function.
+  avatar.mv(avatarFolder+'/temp-avatar.jpg', function(err) {    
 
-  // Save User's avatar. 
-  function saveUserAvatar(photo, name, callback) {
-
-    photo.mv(avatarFolder + '/temp-' + name + '.jpg', function(err) {    
-  
-      // If an error exists print it to the console.
-      if (err) res.status(401).send();
-      
-    }, callback);
-
-  }
+    // If an error exists send 400 and message.
+    if (err) { res.status(400).send('Error uploading profile picture, please try again.'); }
+    
+  }, resizeAvatar());
 
   // Resize the User Avatar.
   function resizeAvatar() {
@@ -194,13 +179,13 @@ exports.saveUserAvatar = function(req, res, userid) {
         easyimg.resize({
           src: srcPath,
           dst: destPath,
-          height: 160,
-          width: 160
+          height: 200,
+          width: 200
         }).then( function(img) {
           fs.unlinkSync(srcPath);
-          res.status(200).send();
+          res.status(200).send('User successfully registered.');
         }, function(err) {
-          if (err) res.status(401).send();
+          if (err) { res.status(400).send('Error uploading profile picture, please try again.'); }
         });
 
     } else {

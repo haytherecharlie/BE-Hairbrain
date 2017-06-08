@@ -19,6 +19,6 @@
 exports.authError = function (err, req, res, next) { 
 
   // If the error is 'UnauthorizedError' send 401. 
-  if(err.name === 'UnauthorizedError') res.status(401).send();
+  if(err.name === 'UnauthorizedError') res.status(401).send('Your session has expired, please login again.');
 
 };

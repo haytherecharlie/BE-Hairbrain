@@ -13,6 +13,7 @@ var easyimg          = require('easyimage');
 var appRoot          = require('app-root-path');
 var clientController = require('./clientController.js');
 
+
 /**
  *                GetPhoto
  * ----------------------------------------
@@ -29,9 +30,11 @@ exports.getPhoto = function(req, res) {
   var photo     = req.params.photo;
 
   // Send the image based on the path. 
-  res.sendFile(appRoot+'/storage/photos/'+userid+'/'+clientid+'/'+photo);
-
+  res.sendFile(appRoot+'/storage/photos/'+userid+'/'+clientid+'/'+photo, 
+    function(err) { if (err) { res.sendFile(appRoot+'/storage/default/client.jpg'); }
+  });
 };
+
 
 /**
  *                GetAvatar
@@ -46,7 +49,12 @@ exports.getAvatar = function(req, res) {
   var userid    = req.params.userid;
 
   // Send the image based on the path. 
-  res.sendFile(appRoot+'/storage/photos/'+userid+'/user-avatar/avatar.jpg');
+  res.sendFile(appRoot+'/storage/photos/'+userid+'/user-avatar/avatar.jpg', 
+
+    // If image failed to load, send default image. 
+    function(err) { if(err) { res.sendFile(appRoot+'/storage/default/avatar.jpg'); }
+
+  });
 };
 
 
@@ -59,83 +67,86 @@ exports.getAvatar = function(req, res) {
  *  saves the photos in the users folder. 
  * ----------------------------------------
  */
-exports.savePhoto = function(req, res, clientid, userid) {
+exports.savePhoto = function(photo, res, clientid, userid) {
 
-  // Create photos path.
+  // Assign User folder path.
   var userFolder   = appRoot +'/storage/photos/' + userid;
+
+  // Assign Client folder path. 
   var clientFolder = userFolder + '/' + clientid;
 
-  // Create user folder if necessary.
-  if (!fs.existsSync(userFolder))
-    fs.mkdirSync(userFolder);
+  // Create User folder if necessary.
+  if (!fs.existsSync(userFolder)) { fs.mkdirSync(userFolder); }
 
-  // Create client folder if necessary. 
-  if (!fs.existsSync(clientFolder))
-    fs.mkdirSync(clientFolder);
+  // Create Client folder if necessary. 
+  if (!fs.existsSync(clientFolder)) { fs.mkdirSync(clientFolder); }
 
-  // Assign params to variables. 
-  var photo = req.files.photo;
+  // Create temporary photo. 
+  photo.mv(clientFolder + '/temp-photo.jpg', function(err) {
+    
+    // If an error exists print it to the console. 
+    if(err) res.status(400).send('Error saving client photo, please try again.');
 
-  // Save photofront. 
-  if(photo)
-    savePhoto(photo, 'photo', resizeImage);
+  }, resizeImage())
 
-  // Save the photo as a jpg to folder.
-  function savePhoto(photo, name, callback) {
-
-    photo.mv(clientFolder + '/temp-' + name + '.jpg', function(err) {
-      
-      // If an error exists print it to the console. 
-      if(err) res.status(400).send('Error saving user, please try again.');
-
-    }, callback(name))
-
-  }
-
+  // Resize the Image.
   function resizeImage(name) {
 
-    var srcPath    = clientFolder + '/temp-' + name + '.jpg',
-        destPath   = clientFolder + '/' + name + '.jpg',
+    var srcPath    = clientFolder + '/temp-photo.jpg',
+        destPath   = clientFolder + '/photo.jpg',
         avatarPath = clientFolder + '/avatar.jpg';
 
-    // If the temp-avatar exists.
+    // If temp-photo.jpg exists.
     if( fs.existsSync(srcPath) ) {
 
+      // Resize client image. 
       easyimg.resize({
         src: srcPath,
         dst: destPath,
         height: 550,
         width: 550
       }).then( function(img) {
-        console.log('success');
 
+        // Resize client avatar.
         easyimg.resize({
           src: srcPath,
           dst: avatarPath,
           height: 160,
-          width: 160
-        }).then( function(img) {
+          width: 160 
+        })
+
+        // Unlink the temp-photo.jpg file and return all clients. 
+        .then( function(img) {
           fs.unlinkSync(srcPath);
           clientController.returnAllClients(res, userid);
-        }, function(err) {
-          if (err) res.status(401).send();;
+        }, 
+
+        // If error saving avatar. 
+        function(err) {
+
+          // Send 400 error. 
+          if (err) res.status(400).send('Error resizing client avatar.');
+
         });
+      }, 
 
-      }, function(err) {
-        if (err) res.status(401).send();;
+      // If error saving client photo.
+      function(err) {
+
+        // Send 400 error.
+        if (err) res.status(400).send('Error resizing client avatar.');
+
       });
+    } 
 
-
-    } else {
+    // If temp-photo.jpg doesn't exist.
+    else {
 
       // Wait 1 second and try again.
-      setTimeout(function() {
-        console.log('trying again.');
-        resizeImage(name);
-      }, 1000);
+      setTimeout(function() { resizeImage(name); }, 1000);
+
     }
   }      
-
 };
 
 
@@ -232,5 +243,4 @@ exports.deleteFolderRecursive = function(path) {
     // Remove the directory
     fs.rmdirSync(path);
   }
-
 };

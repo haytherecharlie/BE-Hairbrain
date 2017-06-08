@@ -18,39 +18,58 @@ var jwt             = require('jsonwebtoken');
  *              Register
  * ----------------------------------------
  * Register the user by adding their credentials
- * to the MongoDB.
+ * to the USER Schema in MongoDB.
  *-----------------------------------------
  */
 exports.register = function(req, res) {
 
-  // Check that all necessary information is sent. 
-  if (!req.body.email)     { res.status(401).send(); return false; }
-  if (!req.body.password)  { res.status(401).send(); return false; }
-  if (!req.body.firstname) { res.status(401).send(); return false; }
-  if (!req.body.lastname)  { res.status(401).send(); return false; }
-  if (!req.body.phone)     { res.status(401).send(); return false; }
-  if (!req.body.salon)     { res.status(401).send(); return false; }
-  if (!req.files)          { res.status(401).send(); return false; }
+  // Check that a profile picture is included. 
+  if (!req.files) { res.status(400).send('You forgot to take a profile picture.'); return false; }
 
-  // Create a new User from the User Model.
+  // Check that first name exists.
+  if (!req.body.firstname) { res.status(400).send('You forgot to include your first name.'); return false; }
+
+  // Check that last name exists.
+  if (!req.body.lastname) { res.status(400).send('You forgot to include your last name.'); return false; }
+
+  // Check that phone number exists.
+  if (!req.body.phone) { res.status(400).send('You forgot to include your phone number.'); return false; }
+
+  // Check that password exists.
+  if (!req.body.password) { res.status(400).send('You forgot to include your password.'); return false; }
+
+  // Check that password is between 8 - 16 characters.
+  if (req.body.password.length < 8 || req.body.password.length > 16) { res.status(400).send('Password must be between 8 - 16 characters.'); return false; }
+
+  // Check that email exists.
+  if (!req.body.email) { res.status(400).send('You forgot to include your email.'); return false; }
+
+  // Check that salon exists. 
+  if (!req.body.salon) { res.status(400).send('You forgot to include your salon'); return false; }
+
+  // Create a new User based on the User Model.
   var user           = new User();
-  user.email         = req.body.email;
-  user.password      = req.body.password;
   user.firstname     = req.body.firstname;
   user.lastname      = req.body.lastname;
   user.phone         = req.body.phone;
+  user.password      = req.body.password;
+  user.email         = req.body.email;
   user.salon         = req.body.salon;
+  user.type          = 'free';
   user.totalRating   = 0;
   user.unreadRatings = 0;
   user.rawRatings    = [];
 
-  // Save the user and their photos.
+  // Save the user to Mongodb.
   user.save(function(err) {
 
-    // If an error exists send it in the response. 
-    if (err) res.status(401).send(err);
+    // If User already exists, send 400. 
+    if (err) { res.status(400).send(user.phone + ' is already a registered phone number. Please contact us if you believe this is an error.'); return false; }
 
-    // Save the avatar. 
+    // Else send 200 response. 
+    else { res.status(200).send('You have been successfully registered.'); return false; }
+
+    // Save the avatar. Send req, res and user Mongo User ID. 
     photoController.saveUserAvatar(req, res, user._id);
 
   })
@@ -136,6 +155,6 @@ exports.profile = function(req, res) {
 exports.isLoggedIn = function(req, res) {
 
   // Send 'authorized' to the Front end
-  res.send('authorized');
+  res.status(200).send();
 
 };

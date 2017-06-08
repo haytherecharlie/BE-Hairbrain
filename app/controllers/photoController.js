@@ -154,7 +154,7 @@ exports.saveUserAvatar = function(req, res, userid) {
   if (!req.files) res.status(401).send();
 
   // Assign params to variables. 
-  var avatar = req.files.avatar; 
+  var avatar       = req.files.avatar; 
   var userFolder   = appRoot +'/storage/photos/' + userid;
   var avatarFolder = userFolder + '/user-avatar';
 

@@ -34,29 +34,24 @@ exports.register = function(req, res) {
 
   // Create a new User from the User Model.
   var user           = new User();
-  user.email         = req.body.email,
-  user.password      = req.body.password,
-  user.firstname     = req.body.firstname,
-  user.lastname      = req.body.lastname,
-  user.phone         = req.body.phone,
-  user.salon         = req.body.salon
-  user.totalRating   = 0,
-  user.unreadRatings = 0,
-  user.rawRatings    = []
+  user.email         = req.body.email;
+  user.password      = req.body.password;
+  user.firstname     = req.body.firstname;
+  user.lastname      = req.body.lastname;
+  user.phone         = req.body.phone;
+  user.salon         = req.body.salon;
+  user.totalRating   = 0;
+  user.unreadRatings = 0;
+  user.rawRatings    = [];
 
   // Save the user and their photos.
   user.save(function(err) {
 
     // If an error exists send it in the response. 
-    if (err) { res.status(401).send(); }
+    if (err) res.status(401).send(err);
 
-    // Else save the user.
-    else {
-
-      // Save the avatar. 
-      photoController.saveUserAvatar(req, res, user._id);
-
-    }
+    // Save the avatar. 
+    photoController.saveUserAvatar(req, res, user._id);
 
   })
 
@@ -102,8 +97,7 @@ exports.login = function(req, res) {
           name: user.firstname + ' ' + user.lastname,
           phone: user.phone,
           email: user.email, 
-          salon: user.salon, 
-          rating: user.totalRating,
+          salon: user.salon,
         });
       }
     })

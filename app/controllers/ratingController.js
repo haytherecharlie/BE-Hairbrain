@@ -13,6 +13,27 @@ var User             = require('../models/userModel');
 var twilioController = require('../controllers/twilioController');
 
 /**
+ *                getRating
+ * ----------------------------------------
+ *  GET a rating for the user. 
+ * ----------------------------------------
+ */
+exports.getRating = function(req, res) {
+
+  User.findOne({_id: req.params.userid}, function(err, user) {
+
+    if(err) res.status(401).send();
+
+    var rating = {
+      total: user.totalRating,
+        raw: user.rawRatings
+    }
+
+    res.status(200).json(rating);
+  })
+}
+
+/**
  *                addRating
  * ----------------------------------------
  *  Add a rating to the user's score. 
@@ -45,7 +66,7 @@ exports.addRating = function(req, res) {
         // If an error exists send it in the response.
         if (err) res.status(401).send();
 
-        exports.deleteRatingRequest(req.body.id);
+        exports.deleteRatingRequest(req, res);
     })
 
   });
@@ -99,10 +120,10 @@ exports.newRatingRequest = function(userid, clientid, name, phone) {
  *  Removes the request from the database.
  * ----------------------------------------
  */
-exports.deleteRatingRequest = function(id) {
+exports.deleteRatingRequest = function(req, res) {
 
   // Delete the Client from MongoDB.
-  Rating.findByIdAndRemove(id, function(err) {
+  Rating.findByIdAndRemove(req.body.id, function(err) {
 
     // If an error exists send it in the response.
     if (err) res.status(401).send();

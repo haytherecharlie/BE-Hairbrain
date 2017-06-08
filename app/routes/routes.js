@@ -75,7 +75,7 @@ var clientController  = require('../controllers/clientController'),
     .get(photoController.getPhoto);
 
     // Get Avatar
-    router.route('/photo/:userid/') 
+    router.route('/avatar/:userid/') 
     .get(photoController.getAvatar);
 
     /*------------------------------------------------------
@@ -91,5 +91,8 @@ var clientController  = require('../controllers/clientController'),
     // Verify Rating Request ID
     router.route('/rating/verify/:id')
     .get(ratingController.verifyRatingRequest);
+
+    router.route('/rating/:userid')
+    .get(ratingController.getRating);
 
 module.exports = router;

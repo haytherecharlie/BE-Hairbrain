@@ -83,23 +83,32 @@ exports.register = function(req, res) {
  */
 exports.login = function(req, res) {
 
+  // Check that phone number exists.
+  if (!req.body.phone) { res.status(400).send('Please include a valid phone number') };
+
+  // Check that password exists.
+  if (!req.body.password) { res.status(400).send('You forgot to include your password.'); return false; }
+
+  // Check that password is between 8 - 16 characters.
+  if (req.body.password.length < 8 || req.body.password.length > 16) { res.status(400).send('Password must be between 8 - 16 characters.'); return false; }
+
   // Find the user by their Phone Number.
   User.findOne({phone: req.body.phone}, function(err, user) {
         
-    // If there's an error send a 401.
-    if (err) { res.status(401).send(); }
+    // If there's an error send a 400.
+    if (err) { res.status(400).send('There was an error, please try again.'); }
 
-    // If user doesn't exist send a 401.
-    if (!user) { res.status(401).send(); return false; }
+    // If user doesn't exist send a 400.
+    if (!user) { res.status(400).send(req.body.phone + ' is not a registered phone number.'); return false; }
 
     // Verify the password.
     user.verifyPassword( req.body.password, function(err, isMatch) {
         
-      // If there's an error send a 401.
-      if (err) res.status(401).send();
+      // If there's an error send a 400.
+      if (err) { res.status(400).send('There was an error, please try again.'); }
 
-      // If the password is wrong send a 401.
-      if (!isMatch) res.status(401).send();
+      // If the password is wrong send a 400.
+      if (!isMatch) { res.status(400).send('Invalid password'); }
 
       // Else password is a success.
       else {
@@ -107,7 +116,7 @@ exports.login = function(req, res) {
         // Create a new JWT that lasts for 24 hours. 
         var myToken = jwt.sign({phone: req.body.phone, password: req.body.password}, configJWT.secret, {expiresIn : '1d'});
 
-        // Send the token to the Front End. 
+        // Send 200 status to the Front End. 
         res.status(200).json({ 
           token: myToken, 
           id: user._id, 
@@ -119,7 +128,6 @@ exports.login = function(req, res) {
       }
     })
   })
-
 };
 
 

@@ -170,8 +170,11 @@ exports.saveUserAvatar = function(avatar, res, userid) {
   // Resize the User Avatar.
   function resizeAvatar() {
 
-      var srcPath  = avatarFolder + '/temp-avatar.jpg';
-      var destPath = avatarFolder + '/avatar.jpg';
+    // Set source path.
+    var srcPath  = avatarFolder + '/temp-avatar.jpg';
+
+    // Set destination path. 
+    var destPath = avatarFolder + '/avatar.jpg';
 
     // If the temp-avatar exists.
     if(fs.existsSync(srcPath)) {
@@ -192,7 +195,7 @@ exports.saveUserAvatar = function(avatar, res, userid) {
 
       // Wait 1 second and try again.
       setTimeout(function() { resizeAvatar(); }, 1000);
-      
+
     }
   }
 

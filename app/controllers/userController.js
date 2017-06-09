@@ -84,7 +84,7 @@ exports.register = function(req, res) {
 exports.login = function(req, res) {
 
   // Check that phone number exists.
-  if (!req.body.phone) { res.status(400).send('Please include a valid phone number') };
+  if (!req.body.phone) { res.status(400).send('Please include a valid phone number'); return false; };
 
   // Check that password exists.
   if (!req.body.password) { res.status(400).send('You forgot to include your password.'); return false; }
@@ -96,7 +96,7 @@ exports.login = function(req, res) {
   User.findOne({phone: req.body.phone}, function(err, user) {
         
     // If there's an error send a 400.
-    if (err) { res.status(400).send('There was an error, please try again.'); }
+    if (err) { res.status(400).send('There was an error, please try again.'); return false; }
 
     // If user doesn't exist send a 400.
     if (!user) { res.status(400).send(req.body.phone + ' is not a registered phone number.'); return false; }
@@ -105,10 +105,10 @@ exports.login = function(req, res) {
     user.verifyPassword( req.body.password, function(err, isMatch) {
         
       // If there's an error send a 400.
-      if (err) { res.status(400).send('There was an error, please try again.'); }
+      if (err) { res.status(400).send('There was an error, please try again.'); return false; }
 
       // If the password is wrong send a 400.
-      if (!isMatch) { res.status(400).send('Invalid password'); }
+      if (!isMatch) { res.status(400).send('Invalid password'); return false; }
 
       // Else password is a success.
       else {

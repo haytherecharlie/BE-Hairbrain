@@ -11,21 +11,35 @@
 // Twilio Credentials 
 var accountSid = 'AC023f46494d53cb97c763e6429ada94be'; 
 var authToken = '662740ab98a3727daf80d5ef7a3707f0'; 
-var alphanumericId = "Hairbrain";
+var alphanumericId = "Hairbrain"; // Doesn't work in Canada yet.
 var twilioNumber = +14387956366;
 
 
  
 //require the Twilio module and create a REST client 
-var client = require('twilio')(accountSid, authToken); 
+var hbTwilio = require('twilio')(accountSid, authToken); 
  
+/**
+ *               sendTwilioSMS
+ * ----------------------------------------
+ *  Send SMS using Twilio. 
+ * ----------------------------------------
+ */
 exports.sendTwilioSMS = function(recipientNumber, stylist, ratingid) {
 
-	client.messages.create({
-	  from: twilioNumber,
-	  to:   recipientNumber,
-	  body: "Looking good! You just had a hair appointment with " + stylist + 
+	// Create and send Twillio Message.
+	hbTwilio.messages.create({
+
+		// Sender
+		from: twilioNumber,
+
+		// Recipeient 
+		to:   recipientNumber,
+
+		// Message Body
+		body: "Looking good! You just had a hair appointment with " + stylist + 
 			". Please take a moment and rate your experience below. " + 
 			"https://www.hairbrain.ca/rating/?id=" + ratingid,
+			
 	})
 }

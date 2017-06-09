@@ -85,7 +85,7 @@ exports.savePhoto = function(photo, res, clientid, userid) {
   photo.mv(clientFolder + '/temp-photo.jpg', function(err) {
     
     // If an error exists print it to the console. 
-    if(err) res.status(400).send('Error saving client photo, please try again.');
+    if(err) { res.status(400).send('Error saving client photo, please try again.'); return false; }
 
   }, resizeImage())
 
@@ -125,7 +125,7 @@ exports.savePhoto = function(photo, res, clientid, userid) {
         function(err) {
 
           // Send 400 error. 
-          if (err) res.status(400).send('Error resizing client avatar.');
+          if (err) { res.status(400).send('Error resizing client avatar.'); return false; }
 
         });
       }, 
@@ -134,7 +134,7 @@ exports.savePhoto = function(photo, res, clientid, userid) {
       function(err) {
 
         // Send 400 error.
-        if (err) res.status(400).send('Error resizing client avatar.');
+        if (err) { res.status(400).send('Error resizing client avatar.'); return false; }
 
       });
     } 
@@ -174,7 +174,7 @@ exports.saveUserAvatar = function(avatar, res, userid) {
   avatar.mv(avatarFolder+'/temp-avatar.jpg', function(err) {    
 
     // If an error exists send 400 and message.
-    if (err) { res.status(400).send('Error uploading profile picture, please try again.'); }
+    if (err) { res.status(400).send('Error uploading profile picture, please try again.'); return false; }
     
   }, resizeAvatar());
 
@@ -197,9 +197,9 @@ exports.saveUserAvatar = function(avatar, res, userid) {
           width: 200
         }).then( function(img) {
           fs.unlinkSync(srcPath);
-          res.status(200).send('User successfully registered.');
+          res.status(200).send('User successfully registered.'); return false;
         }, function(err) {
-          if (err) { res.status(400).send('Error uploading profile picture, please try again.'); }
+          if (err) { res.status(400).send('Error uploading profile picture, please try again.'); return false; }
         });
 
     } else {
@@ -221,7 +221,7 @@ exports.saveUserAvatar = function(avatar, res, userid) {
  *  this function removes them recursivly. 
  * ----------------------------------------
  */
-exports.deleteFolderRecursive = function(path) {
+exports.deleteFolderRecursive = function(path, userid, res) {
 
   // Check if the path exists.  
   if(fs.existsSync(path)) {
@@ -243,4 +243,8 @@ exports.deleteFolderRecursive = function(path) {
     // Remove the directory
     fs.rmdirSync(path);
   }
+
+  // Return Clients to the Front End. 
+  clientController.returnAllClients(res, userid);
+
 };

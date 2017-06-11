@@ -48,8 +48,12 @@ var UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  type: {
+  accountType: {
     type: String,
+    required: true
+  },
+  totalClients: {
+    type: Number,
     required: true
   },
   totalRating: {

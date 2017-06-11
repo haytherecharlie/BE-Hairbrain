@@ -74,7 +74,7 @@ var clientController  = require('../controllers/clientController'),
     .get(photoController.getPhoto);
 
     // Get Avatar
-    router.route('/avatar/:userid/') 
+    router.route('/avatar/:userid') 
     .get(photoController.getAvatar);
 
 
@@ -85,7 +85,7 @@ var clientController  = require('../controllers/clientController'),
     ------------------------------------------------------*/
 
     // New User Rating
-    router.route('/rating/:userid/:clientid/') 
+    router.route('/rating/:userid/:clientid') 
     .post(ratingController.addRating);
 
     // Verify Rating Request ID

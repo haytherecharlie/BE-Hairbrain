@@ -24,8 +24,8 @@ var ClientSchema   = new mongoose.Schema({
   lastname:  String,
   phone:     String,
   notes:     String,
-  userid:    String
-
+  userid:    String,
+  photos:    [ String ],
 });
 
 

@@ -32,6 +32,9 @@ exports.clientAdd = function(req, res) {
   // If phone doesn't exist.
   if (!req.body.phone) { res.status(400).send('Please include phone number.'); return false; }
 
+  // If files arent attached.
+  if (!req.files) { res.status(400).send('Please include photos.'); return false; }
+
   // If photo doesn't exist.
   if (!req.files.photo) { res.status(400).send('Please include photos.'); return false; }
 
@@ -124,6 +127,9 @@ exports.clientEdit = function(req, res) {
 
   // If phone doesn't exist.
   if (!req.body.phone) { res.status(400).send('Please include phone number.'); return false; }
+
+  // If files arent attached.
+  if (!req.files) { res.status(400).send('Please include photos.'); return false; }
 
   // If photo doesn't exist.
   if (!req.files.photo) { res.status(400).send('Please include photos.'); return false; }

@@ -24,7 +24,10 @@ var jwt             = require('jsonwebtoken');
  */
 exports.register = function(req, res) {
 
-  // Check that a profile picture is included. 
+  // Check that a file is attached. 
+  if (!req.files) { res.status(400).send('You forgot to take a profile picture.'); return false; }
+
+  // Check that the file is an avatar. 
   if (!req.files.avatar) { res.status(400).send('You forgot to take a profile picture.'); return false; }
 
   // Check that first name exists.

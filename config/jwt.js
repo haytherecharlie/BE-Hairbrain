@@ -12,8 +12,8 @@
 module.exports = {
     'secret'   : 'montreal 2030 rue du fort',
     'except'   : [
-    	new RegExp('/login'), 
-    	new RegExp('/register'), 
+    	new RegExp('/login.*/', 'i'), 
+    	new RegExp('/register.*/', 'i'), 
     	new RegExp('/photo.*/', 'i'),
     	new RegExp('/avatar.*/', 'i'),
     	new RegExp('/rating.*/', 'i')

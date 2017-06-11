@@ -38,9 +38,6 @@ exports.clientAdd = function(req, res) {
   // If photo doesn't exist.
   if (!req.files.photo) { res.status(400).send('Please include photos.'); return false; }
 
-  // If notes doesn't exist.
-  if (!req.body.notes) { res.status(400).send('Please include notes.'); return false; }
-
   // If name doesn't exist.
   if (!req.body.name) { res.status(400).send('There was an error.'); return false; }
 

@@ -1,6 +1,4 @@
-![Hairbrain Logo](http://www.hairbrain.ca/app/img/hairbrain.png "Hairbrain")
-
-**© 2017 Hairbrain inc.**
+![Hairbrain Logo](http://www.hairbrain.ca/app/img/hairbrain.svg "Hairbrain")
 
 **Created:** February 11 2017
 

@@ -136,6 +136,32 @@ exports.login = function(req, res) {
 
 
 /**
+ *                   Login
+ * ----------------------------------------
+ * Log the user into the application.
+ *-----------------------------------------
+ */
+exports.userProfile = function(req, res) {
+
+  console.log(req.params.phone);
+
+  // Find the user by their Phone Number.
+  User.findOne({phone: req.params.phone}, function(err, user) {
+ 
+    // If there's an error send a 400.
+    if (err) { res.status(400).send('There was an error, please try again.'); return false; }
+
+    // If user doesn't exist send a 400.
+    if (!user) { res.status(400).send(req.body.phone + ' is not a registered phone number.'); return false; }
+
+    // Else send the user.
+    else { res.status(200).json(user); }
+
+  });
+};
+
+
+/**
  *             IsLoggedIn
  * ----------------------------------------
  * Check if the user is logged in already. 

@@ -82,71 +82,16 @@ exports.savePhoto = function(photo, res, clientid, userid) {
   if (!fs.existsSync(clientFolder)) { fs.mkdirSync(clientFolder); }
 
   // Create temporary photo. 
-  photo.mv(clientFolder + '/temp-photo.jpg', function(err) {
+  photo.mv(clientFolder + '/photo.jpg', function(err) {
     
     // If an error exists print it to the console. 
     if(err) { res.status(400).send('Error saving client photo, please try again.'); return false; }
 
-  }, resizeImage())
+  });
 
-  // Resize the Image.
-  function resizeImage(name) {
+  // Return all clients. 
+  clientController.returnAllClients(res, userid);    
 
-    var srcPath    = clientFolder + '/temp-photo.jpg',
-        destPath   = clientFolder + '/photo.jpg',
-        avatarPath = clientFolder + '/avatar.jpg';
-
-    // If temp-photo.jpg exists.
-    if( fs.existsSync(srcPath) ) {
-
-      // Resize client image. 
-      easyimg.resize({
-        src: srcPath,
-        dst: destPath,
-        height: 550,
-        width: 550
-      }).then( function(img) {
-
-        // Resize client avatar.
-        easyimg.resize({
-          src: srcPath,
-          dst: avatarPath,
-          height: 160,
-          width: 160 
-        })
-
-        // Unlink the temp-photo.jpg file and return all clients. 
-        .then( function(img) {
-          fs.unlinkSync(srcPath);
-          clientController.returnAllClients(res, userid);
-        }, 
-
-        // If error saving avatar. 
-        function(err) {
-
-          // Send 400 error. 
-          if (err) { res.status(400).send('Error resizing client avatar.'); return false; }
-
-        });
-      }, 
-
-      // If error saving client photo.
-      function(err) {
-
-        // Send 400 error.
-        if (err) { res.status(400).send('Error resizing client avatar.'); return false; }
-
-      });
-    } 
-
-    // If temp-photo.jpg doesn't exist.
-    else {
-
-      // Wait 1 second and try again.
-      setTimeout(function() { resizeImage(name); }, 1000);
-
-    }
-  }      
 };
 
 

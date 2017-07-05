@@ -58,14 +58,13 @@ var clientController  = require('../controllers/clientController'),
     router.route('/client/profile/:userid/:clientid') 
     .get(clientController.clientProfile);
 
-    // Edit Client   
-    router.route('/client/edit/:userid/:clientid') 
-    .put(clientController.clientEdit);
-
     // Delete Client 
     router.route('/client/delete/:userid/:clientid') 
     .delete(clientController.clientDelete);
 
+    // Edit Client   
+    router.route('/client/edit/:userid/:clientid') 
+    .put(clientController.clientEdit);
 
     /*------------------------------------------------------
 

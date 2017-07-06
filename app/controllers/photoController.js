@@ -49,7 +49,7 @@ exports.getAvatar = function(req, res) {
   var userid    = req.params.userid;
 
   // Send the image based on the path. 
-  res.sendFile(appRoot+'/storage/photos/'+userid+'/user-avatar/avatar.jpg', 
+  res.sendFile(appRoot+'/storage/photos/'+userid+'/avatar/avatar.jpg', 
 
     // If image failed to load, send default image. 
     function(err) { if(err) { res.sendFile(appRoot+'/storage/default/avatar.jpg'); }
@@ -75,6 +75,12 @@ exports.savePhoto = function(photo, res, clientid, userid) {
   // Assign Client folder path. 
   var clientFolder = userFolder + '/' + clientid;
 
+  // Set source photo path.
+  var photoPath  = clientFolder + '/photo.jpg';
+
+  // Set avatar path. 
+  var avatarPath = clientFolder + '/avatar.jpg';  
+
   // Create User folder if necessary.
   if (!fs.existsSync(userFolder)) { fs.mkdirSync(userFolder); }
 
@@ -82,16 +88,34 @@ exports.savePhoto = function(photo, res, clientid, userid) {
   if (!fs.existsSync(clientFolder)) { fs.mkdirSync(clientFolder); }
 
   // Create temporary photo. 
-  photo.mv(clientFolder + '/photo.jpg', function(err) {
+  photo.mv(photoPath, function(err) {
     
     // If an error exists print it to the console. 
     if(err) { res.status(400).send('Error saving client photo, please try again.'); return false; }
 
-  });
+    // If an avatar doesn't exist yet. 
+    if (!fs.existsSync(avatarPath)) { 
 
-  // Return all clients. 
-  clientController.returnAllClients(res, userid);    
+      // Resize client avatar.
+      easyimg.resize({
+        src: photoPath,
+        dst: avatarPath,
+        height: 150,
+        width: 150 
+      })
 
+      // Return all clients.
+      .then( function() { clientController.returnAllClients(res, userid);}, 
+
+      // If error saving avatar. 
+      function(err) {
+
+        // Send 400 error. 
+        if (err) { res.status(400).send('Error resizing client avatar.'); return false; }
+
+      });
+    }
+  }); 
 };
 
 
@@ -107,7 +131,7 @@ exports.saveUserAvatar = function(avatar, res, userid) {
 
   // Assign variables. 
   var userFolder   = appRoot +'/storage/photos/' + userid;
-  var avatarFolder = userFolder + '/user-avatar';
+  var avatarFolder = userFolder + '/avatar/';
 
   // Create User folder if needed. 
   if (!fs.existsSync(userFolder)) { fs.mkdirSync(userFolder); }
@@ -116,44 +140,14 @@ exports.saveUserAvatar = function(avatar, res, userid) {
   if (!fs.existsSync(avatarFolder)) { fs.mkdirSync(avatarFolder); }
 
   // Move the avatar to a temp folder then call resize function.
-  avatar.mv(avatarFolder+'/temp-avatar.jpg', function(err) {    
+  avatar.mv(avatarFolder + 'avatar.jpg', function(err) {    
 
     // If an error exists send 400 and message.
     if (err) { res.status(400).send('Error uploading profile picture, please try again.'); return false; }
+
+    else { res.status(200).send('Registration Successful!') };
     
-  }, resizeAvatar());
-
-  // Resize the User Avatar.
-  function resizeAvatar() {
-
-    // Set source path.
-    var srcPath  = avatarFolder + '/temp-avatar.jpg';
-
-    // Set destination path. 
-    var destPath = avatarFolder + '/avatar.jpg';
-
-    // If the temp-avatar exists.
-    if(fs.existsSync(srcPath)) {
-
-        easyimg.resize({
-          src: srcPath,
-          dst: destPath,
-          height: 200,
-          width: 200
-        }).then( function(img) {
-          fs.unlinkSync(srcPath);
-          res.status(200).send('User successfully registered.'); return false;
-        }, function(err) {
-          if (err) { res.status(400).send('Error uploading profile picture, please try again.'); return false; }
-        });
-
-    } else {
-
-      // Wait 1 second and try again.
-      setTimeout(function() { resizeAvatar(); }, 1000);
-
-    }
-  }
+  });
 
 };
 

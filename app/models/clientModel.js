@@ -26,6 +26,7 @@ var ClientSchema   = new mongoose.Schema({
   notes:     String,
   userid:    String,
   photos:   [String],
+  
 });
 
 

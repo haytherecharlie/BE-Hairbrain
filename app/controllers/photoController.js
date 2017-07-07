@@ -87,6 +87,12 @@ exports.savePhoto = function(photo, res, clientid, userid) {
   // Create Client folder if necessary. 
   if (!fs.existsSync(clientFolder)) { fs.mkdirSync(clientFolder); }
 
+  // If a photo exists already, delete.
+  if (fs.existsSync(photoPath)) { fs.unlinkSync(photoPath); }
+
+  // If a avatar exists already, delete.
+  if (fs.existsSync(avatarPath)) { fs.unlinkSync(avatarPath); }
+
   // Create temporary photo. 
   photo.mv(photoPath, function(err) {
     

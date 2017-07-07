@@ -32,12 +32,6 @@ exports.clientAdd = function(req, res) {
   // If phone doesn't exist.
   if (!req.body.phone) { res.status(400).send('Please include phone number.'); return false; }
 
-  // If files arent attached.
-  if (!req.files) { res.status(400).send('Please include photos.'); return false; }
-
-  // If photo doesn't exist.
-  if (!req.files.photo) { res.status(400).send('Please include photos.'); return false; }
-
   // If name doesn't exist.
   if (!req.body.name) { res.status(400).send('There was an error.'); return false; }
 
@@ -65,8 +59,15 @@ exports.clientAdd = function(req, res) {
       // Call ratings controller and create a new request.
       ratingController.newRatingRequest(client.userid, client._id, name, client.phone);
 
-      // Save the photos using the Photo Controller. 
-      photoController.savePhoto(req.files.photo, res, client._id, client.userid);
+      // If photo exists send it to photoController.
+      if (req.files && req.files.photo) {
+        photoController.savePhoto(req.files.photo, res, client._id, client.userid);
+      }
+
+      // else return all clients.
+      else { 
+        exports.returnAllClients(res, userid); 
+      }
 
     }
   })
@@ -125,12 +126,6 @@ exports.clientEdit = function(req, res) {
   // If phone doesn't exist.
   if (!req.body.phone) { res.status(400).send('Please include phone number.'); return false; }
 
-  // If files arent attached.
-  if (!req.files) { res.status(400).send('Please include photos.'); return false; }
-
-  // If photo doesn't exist.
-  if (!req.files.photo) { res.status(400).send('Please include photos.'); return false; }
-
   // If notes doesn't exist.
   if (!req.body.notes) { res.status(400).send('Please include notes.'); return false; }
 
@@ -161,8 +156,15 @@ exports.clientEdit = function(req, res) {
         // If an error exists send it in the response.
         if (err) { res.status(400).send('Error updating client.'); return false; }
 
-        // Save any new photos to their directory. 
-        else { photoController.savePhoto(req.files.photo, res, client._id, client.userid); }
+        // If photo exists send it to photoController.
+        if (req.files && req.files.photo) {
+          photoController.savePhoto(req.files.photo, res, client._id, client.userid);
+        }
+
+        // else return all clients.
+        else { 
+          exports.returnAllClients(res, client.userid); 
+        }
 
       })
     }

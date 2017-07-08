@@ -158,7 +158,9 @@ exports.clientEdit = function(req, res) {
 
         // If photo exists send it to photoController.
         if (req.files && req.files.photo) {
+          console.log('yep');
           photoController.savePhoto(req.files.photo, res, client._id, client.userid);
+          return false;
         }
 
         // else return all clients.

@@ -111,7 +111,9 @@ exports.savePhoto = function(photo, res, clientid, userid) {
       })
 
       // Return all clients.
-      .then( function() { clientController.returnAllClients(res, userid);}, 
+      .then( 
+
+      function() { clientController.returnAllClients(res, userid);}, 
 
       // If error saving avatar. 
       function(err) {

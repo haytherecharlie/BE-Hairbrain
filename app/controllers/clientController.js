@@ -44,6 +44,8 @@ exports.clientAdd = function(req, res) {
   client.firstname = req.body.firstname;
   client.lastname  = req.body.lastname;
   client.phone     = req.body.phone;
+  client.photo     = req.body.photo;
+  client.avatar    = req.body.avatar;
   client.notes     = req.body.notes;
   client.userid    = req.params.userid;
 
@@ -59,15 +61,7 @@ exports.clientAdd = function(req, res) {
       // Call ratings controller and create a new request.
       ratingController.newRatingRequest(client.userid, client._id, name, client.phone);
 
-      // If photo exists send it to photoController.
-      if (req.files && req.files.photo) {
-        photoController.savePhoto(req.files.photo, res, client._id, client.userid);
-      }
-
-      // else return all clients.
-      else { 
-        exports.returnAllClients(res, userid); 
-      }
+      exports.returnAllClients(res, client.userid);
 
     }
   })
@@ -102,7 +96,7 @@ exports.clientDelete = function(req, res) {
     if (err) { res.status(400).send('Client cannot be found.'); return false; }
 
     // Delete Client's photo folder.
-    else { photoController.deleteFolderRecursive(folderPath, userid, res); }
+    else { exports.returnAllClients(res, userid); }
 
   })
 
@@ -116,6 +110,8 @@ exports.clientDelete = function(req, res) {
  * ----------------------------------------
  */
 exports.clientEdit = function(req, res) {
+
+  console.log(req.body);
 
   // If firstname doesn't exist.
   if (!req.body.firstname) { res.status(400).send('Please include firstname.'); return false; }
@@ -147,6 +143,8 @@ exports.clientEdit = function(req, res) {
       client.firstname = req.body.firstname;
       client.lastname  = req.body.lastname;
       client.phone     = req.body.phone;
+      client.photo     = req.body.photo;
+      client.avatar    = req.body.avatar;
       client.notes     = req.body.notes;
       client.userid    = req.params.userid;
 
@@ -155,13 +153,6 @@ exports.clientEdit = function(req, res) {
 
         // If an error exists send it in the response.
         if (err) { res.status(400).send('Error updating client.'); return false; }
-
-        // If photo exists send it to photoController.
-        if (req.files && req.files.photo) {
-          console.log('yep');
-          photoController.savePhoto(req.files.photo, res, client._id, client.userid);
-          return false;
-        }
 
         // else return all clients.
         else { 

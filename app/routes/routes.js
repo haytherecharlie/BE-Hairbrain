@@ -72,13 +72,13 @@ var clientController  = require('../controllers/clientController'),
 
     ------------------------------------------------------*/
 
-    // Get Photos
-    router.route('/photo/:userid/:clientid/:photo') 
-    .get(photoController.getPhoto);
+    // // Get Photos
+    // router.route('/photo/:userid/:clientid/:photo') 
+    // .get(photoController.getPhoto);
 
-    // Get Avatar
-    router.route('/avatar/:userid') 
-    .get(photoController.getAvatar);
+    // // Get Avatar
+    // router.route('/avatar/:userid') 
+    // .get(photoController.getAvatar);
 
 
     /*------------------------------------------------------

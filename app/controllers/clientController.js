@@ -32,6 +32,12 @@ exports.clientAdd = function(req, res) {
   // If phone doesn't exist.
   if (!req.body.phone) { res.status(400).send('Please include phone number.'); return false; }
 
+  // If photo doesn't exist.
+  if (!req.body.photo) { res.status(400).send('Please include a photo.'); return false; }
+
+  // If avatar doesn't exist.
+  if (!req.body.avatar) { res.status(400).send('Please include avatar.'); return false; }
+
   // If name doesn't exist.
   if (!req.body.name) { res.status(400).send('There was an error.'); return false; }
 
@@ -87,7 +93,6 @@ exports.clientDelete = function(req, res) {
   // Assign params to variables. 
   var userid     = req.params.userid;
   var clientid   = req.params.clientid;
-  var folderPath = appRoot + '/storage/photos/' + userid + '/' + clientid;
 
   // Delete the Client from MongoDB.
   Client.findByIdAndRemove(clientid, function(err) {
@@ -143,10 +148,11 @@ exports.clientEdit = function(req, res) {
       client.firstname = req.body.firstname;
       client.lastname  = req.body.lastname;
       client.phone     = req.body.phone;
-      client.photo     = req.body.photo;
-      client.avatar    = req.body.avatar;
       client.notes     = req.body.notes;
       client.userid    = req.params.userid;
+
+      if (req.body.photo)  { client.photo  = req.body.photo;  }
+      if (req.body.avatar) { client.avatar = req.body.avatar; }
 
       // Save the client and check for errors
       client.save(function(err) {

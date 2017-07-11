@@ -45,6 +45,9 @@ exports.register = function(req, res) {
   // Check that salon exists. 
   if (!req.body.salon) { res.status(400).send('You forgot to include your salon'); return false; }
 
+  // Check that avatar exists.
+  if (!req.body.avatar) { res.status(400).send('You forgot to include an avatar.'); return false; }
+
   // Create a new User based on the User Model.
   var user           = new User();
   user.firstname     = req.body.firstname;

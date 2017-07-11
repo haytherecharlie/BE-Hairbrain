@@ -179,14 +179,20 @@ exports.removeRatingForDeletedClient = function(clientid) {
     // If an error exists send it in the response.
     if (err) { console.log(err); return false; }
 
-    var id = rating._id;
+    if(rating) {
 
-    Rating.findByIdAndRemove(id, function(err) {
+      var id = rating._id;
 
-      // If an error exists send it in the response.
-      if (err) { console.log(err); return false; }
+      Rating.findByIdAndRemove(id, function(err) {
 
-    })
+        // If an error exists send it in the response.
+        if (err) { console.log(err); return false; }
+
+      })
+    }
+
+    else { return false; }
+    
   })
 };
 

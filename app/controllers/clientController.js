@@ -11,6 +11,7 @@
 var appRoot          = require('app-root-path');
 var Client           = require('../models/clientModel');
 var ratingController = require('./ratingController.js');
+var userController   = require('./userController.js');
 
 
 /**
@@ -66,7 +67,7 @@ exports.clientAdd = function(req, res) {
       // Call ratings controller and create a new request.
       ratingController.newRatingRequest(client.userid, client._id, name, client.phone);
 
-      exports.returnAllClients(res, client.userid);
+      userController.appendClientId(res, client.userid, client._id);
 
     }
   })
@@ -100,7 +101,7 @@ exports.clientDelete = function(req, res) {
     if (err) { res.status(400).send('Client cannot be found.'); return false; }
 
     // Delete Client's photo folder.
-    else { exports.returnAllClients(res, userid); }
+    else { userController.removeClientId(res, userid, clientid); }
 
   })
 
@@ -114,8 +115,6 @@ exports.clientDelete = function(req, res) {
  * ----------------------------------------
  */
 exports.clientEdit = function(req, res) {
-
-  console.log(req.body);
 
   // If firstname doesn't exist.
   if (!req.body.firstname) { res.status(400).send('Please include firstname.'); return false; }

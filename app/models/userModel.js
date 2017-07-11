@@ -52,6 +52,9 @@ var UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  clients: {
+    type: [String],
+  },
   accountType: {
     type: String,
     required: true

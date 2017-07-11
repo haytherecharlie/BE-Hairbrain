@@ -8,9 +8,10 @@
 * USER CONTROLLER
 /******************************************/
 
-var User            = require('../models/userModel');
-var configJWT       = require('../../config/jwt');
-var jwt             = require('jsonwebtoken');
+var User             = require('../models/userModel');
+var configJWT        = require('../../config/jwt');
+var jwt              = require('jsonwebtoken');
+var clientController = require('./clientController.js');
 
 
 /**
@@ -55,6 +56,7 @@ exports.register = function(req, res) {
   user.password      = req.body.password;
   user.email         = req.body.email;
   user.salon         = req.body.salon;
+  user.clients       = [],
   user.avatar        = req.body.avatar;
   user.accountType   = 'free';
   user.totalClients  = 0;
@@ -129,6 +131,63 @@ exports.login = function(req, res) {
         });
       }
     })
+  })
+};
+
+exports.appendClientId = function(res, userid, clientid) {
+
+  User.findById(userid, function(err, user) {
+
+    // If there's an error send a 400.
+    if (err) { res.status(400).send('There was an error, please try again.'); return false; }   
+
+    user.clients.push(clientid);
+
+    user.totalClients += 1;
+
+    // Save the client and check for errors
+    user.save(function(err) {
+
+      // If an error exists send it in the response.
+      if (err) { res.status(400).send('Error updating user.'); return false; }
+
+      // else return all clients.
+      else { clientController.returnAllClients(res, userid); return false; }
+
+    })
+
+  })
+};
+
+exports.removeClientId = function(res, userid, clientid) {
+
+  User.findById(userid, function(err, user) {
+
+    // If there's an error send a 400.
+    if (err) { res.status(400).send('There was an error, please try again.'); return false; } 
+
+    for(var i in user.clients) {
+
+      if(user.clients[i] === clientid) {
+
+        user.clients.splice(i, 1);
+        user.totalClients -= 1;
+
+        // Save the client and check for errors
+        user.save(function(err) {
+
+          // If an error exists send it in the response.
+          if (err) { res.status(400).send('Error updating user.'); return false; }
+
+          // else return all clients.
+          else { clientController.returnAllClients(res, userid); return false; }
+
+        })
+      }
+    }
+
+    clientController.returnAllClients(res, userid); return false;
+
   })
 };
 

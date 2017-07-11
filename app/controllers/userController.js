@@ -9,7 +9,6 @@
 /******************************************/
 
 var User            = require('../models/userModel');
-var photoController = require('./photoController.js');
 var configJWT       = require('../../config/jwt');
 var jwt             = require('jsonwebtoken');
 

@@ -9,7 +9,6 @@
 /******************************************/
 
 var clientController  = require('../controllers/clientController'),
-    photoController   = require('../controllers/photoController'),
     userController    = require('../controllers/userController'),
     ratingController  = require('../controllers/ratingController'),
     authController    = require('../controllers/authController'),

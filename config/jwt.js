@@ -15,7 +15,6 @@ module.exports = {
     	new RegExp('/login'), 
     	new RegExp('/register'), 
     	new RegExp('/profile.*/', 'i'),
-    	new RegExp('/photo.*/', 'i'),
     	new RegExp('/avatar.*/', 'i'),
     	new RegExp('/rating.*/', 'i')
     ]

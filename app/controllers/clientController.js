@@ -10,7 +10,6 @@
 
 var appRoot          = require('app-root-path');
 var Client           = require('../models/clientModel');
-var photoController  = require('./photoController.js');
 var ratingController = require('./ratingController.js');
 
 

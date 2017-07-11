@@ -192,8 +192,11 @@ exports.removeRatingForDeletedClient = function(clientid) {
     }
 
     else { return false; }
-    
+
   })
+
+  return false;
+  
 };
 
 /**

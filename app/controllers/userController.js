@@ -24,12 +24,6 @@ var jwt             = require('jsonwebtoken');
  */
 exports.register = function(req, res) {
 
-  // Check that a file is attached. 
-  if (!req.files) { res.status(400).send('You forgot to take a profile picture.'); return false; }
-
-  // Check that the file is an avatar. 
-  if (!req.files.avatar) { res.status(400).send('You forgot to take a profile picture.'); return false; }
-
   // Check that first name exists.
   if (!req.body.firstname) { res.status(400).send('You forgot to include your first name.'); return false; }
 
@@ -51,6 +45,9 @@ exports.register = function(req, res) {
   // Check that salon exists. 
   if (!req.body.salon) { res.status(400).send('You forgot to include your salon'); return false; }
 
+  // Check that avatar exists.
+  if (!req.body.avatar) { res.status(400).send('You forgot to include an avatar.'); return false; }
+
   // Create a new User based on the User Model.
   var user           = new User();
   user.firstname     = req.body.firstname;
@@ -59,6 +56,7 @@ exports.register = function(req, res) {
   user.password      = req.body.password;
   user.email         = req.body.email;
   user.salon         = req.body.salon;
+  user.avatar        = req.body.avatar;
   user.accountType   = 'free';
   user.totalClients  = 0;
   user.totalRating   = 0;
@@ -72,7 +70,7 @@ exports.register = function(req, res) {
     if (err) { res.status(400).send(user.phone + ' is already a registered phone number. Please contact us if you believe this is an error.'); return false; }
 
     // Else save avatar. 
-    else { photoController.saveUserAvatar(req.files.avatar, res, user._id); }
+    else { res.status(200).send('Registration Successful!'); }
 
   })
 
@@ -128,6 +126,7 @@ exports.login = function(req, res) {
           phone: user.phone,
           email: user.email, 
           salon: user.salon,
+          avatar: user.avatar
         });
       }
     })

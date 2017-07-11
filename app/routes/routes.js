@@ -66,20 +66,6 @@ var clientController  = require('../controllers/clientController'),
     router.route('/client/edit/:userid/:clientid') 
     .put(clientController.clientEdit);
 
-    /*------------------------------------------------------
-
-                       PHOTO API ENDPOINTS
-
-    ------------------------------------------------------*/
-
-    // Get Photos
-    router.route('/photo/:userid/:clientid/:photo') 
-    .get(photoController.getPhoto);
-
-    // Get Avatar
-    router.route('/avatar/:userid') 
-    .get(photoController.getAvatar);
-
 
     /*------------------------------------------------------
 

@@ -44,6 +44,10 @@ var UserSchema = new mongoose.Schema({
     unique: true,
     required: true
   },
+  avatar: {
+    type: String,
+    required: true
+  },
   salon: {
     type: String,
     required: true

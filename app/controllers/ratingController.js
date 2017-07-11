@@ -170,8 +170,25 @@ exports.deleteRatingRequest = function(req, res) {
     else { res.status(200).send('Rating deleted.'); return false; }
     
   })
-}
+};
 
+exports.removeRatingForDeletedClient = function(clientid) {
+
+  Rating.findOne({clientid: clientid }, function(err, rating) {
+
+    // If an error exists send it in the response.
+    if (err) { console.log(err) }
+
+    var id = rating._id;
+
+    Rating.findByIdAndRemove(id, function(err) {
+
+      // If an error exists send it in the response.
+      if (err) { console.log(err) }
+
+    })
+  })
+};
 
 /**
  *            verifyRatingRequest

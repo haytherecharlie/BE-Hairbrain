@@ -186,8 +186,6 @@ exports.removeClientId = function(res, userid, clientid) {
       }
     }
 
-    clientController.returnAllClients(res, userid); return false;
-
   })
 };
 

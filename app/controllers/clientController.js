@@ -101,7 +101,13 @@ exports.clientDelete = function(req, res) {
     if (err) { res.status(400).send('Client cannot be found.'); return false; }
 
     // Delete Client's photo folder.
-    else { userController.removeClientId(res, userid, clientid); }
+    else { 
+
+      ratingController.removeRatingForDeletedClient(clientid);
+      
+      userController.removeClientId(res, userid, clientid); 
+
+    }
 
   })
 

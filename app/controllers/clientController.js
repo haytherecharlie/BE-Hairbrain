@@ -23,43 +23,45 @@ var userController   = require('./userController.js');
  */
 exports.clientAdd = function(req, res) {
 
+  var client = new Client();
+
+  // If userid doesn't exist. 
+  if (!req.params.userid) { res.status(400).send('Error: Userid not found.'); return false; }
+  else { client.userid = req.params.userid; }
+
   // If firstname doesn't exist.
-  if (!req.body.firstname) { res.status(400).send('Please include firstname.'); return false; }
+  if (!req.body.firstname) { res.status(400).send('Error: Please include firstname.'); return false; } 
+  else { client.firstname = req.body.firstname; }
 
   // If lastname doesn't exist.
-  if (!req.body.lastname) { res.status(400).send('Please include lastname.'); return false; }
+  if (!req.body.lastname) { res.status(400).send('Error: Please include lastname.'); return false; }
+  else { client.lastname = req.body.lastname; }
 
   // If phone doesn't exist.
-  if (!req.body.phone) { res.status(400).send('Please include phone number.'); return false; }
+  if (!req.body.phone) { client.phone = '1(000)000-0000'; }
+  else { client.phone = req.body.phone; }
 
   // If photo doesn't exist.
-  if (!req.body.photo) { res.status(400).send('Please include a photo.'); return false; }
+  if (typeof req.body.photo === 'undefined') { client.photo = 'no-photo'; }
+  else { client.photo = req.body.photo; }
 
   // If avatar doesn't exist.
-  if (!req.body.avatar) { res.status(400).send('Please include avatar.'); return false; }
+  if (typeof req.body.avatar === 'undefined') { client.avatar = 'no-avatar'; }
+  else { client.avatar = req.body.avatar; }
+
+  // If notes don't exist.
+  if (!req.body.notes) { client.notes = ''; }
+  else { client.notes = req.body.notes; }  
 
   // If name doesn't exist.
-  if (!req.body.name) { res.status(400).send('There was an error.'); return false; }
-
-  // If userid doesn't exist.
-  if (!req.params.userid) { res.status(400).send('There was an error.'); return false; }
-
-  // Assign name variable and create new Client object.
-  var name         = req.body.name;
-  var client       = new Client();
-  client.firstname = req.body.firstname;
-  client.lastname  = req.body.lastname;
-  client.phone     = req.body.phone;
-  client.photo     = req.body.photo;
-  client.avatar    = req.body.avatar;
-  client.notes     = req.body.notes;
-  client.userid    = req.params.userid;
+  if (!req.body.name) { res.status(400).send('Error: No stylist name found.'); return false; }
+  else { var name = req.body.name; }
 
   // Save the client.
   client.save(function(err) {
 
     // Client save failed.
-    if (err) { res.status(400).send('Error saving client, please try again.'); return false; }
+    if (err) { res.status(400).send('Error: Saving client failed.'); return false; }
 
     // Client was saved to DB.
     else { 
@@ -67,6 +69,7 @@ exports.clientAdd = function(req, res) {
       // Call ratings controller and create a new request.
       ratingController.newRatingRequest(client.userid, client._id, name, client.phone);
 
+      // Return the client list. 
       userController.appendClientId(res, client.userid, client._id);
 
     }
@@ -108,9 +111,7 @@ exports.clientDelete = function(req, res) {
       userController.removeClientId(res, userid, clientid); 
 
     }
-
   })
-
 };
 
 
@@ -122,23 +123,8 @@ exports.clientDelete = function(req, res) {
  */
 exports.clientEdit = function(req, res) {
 
-  // If firstname doesn't exist.
-  if (!req.body.firstname) { res.status(400).send('Please include firstname.'); return false; }
-
-  // If lastname doesn't exist.
-  if (!req.body.lastname) { res.status(400).send('Please include lastname.'); return false; }
-
-  // If phone doesn't exist.
-  if (!req.body.phone) { res.status(400).send('Please include phone number.'); return false; }
-
-  // If notes doesn't exist.
-  if (!req.body.notes) { res.status(400).send('Please include notes.'); return false; }
-
-  // If userid doesn't exist.
-  if (!req.params.userid) { res.status(400).send('There was an error.'); return false; }
-
   // If clientid doesn't exist.
-  if (!req.params.clientid) { res.status(400).send('There was an error.'); return false; }
+  if (!req.params.clientid) { res.status(400).send('Error: There was an error.'); return false; }
 
   // Use the Client model to find a specific client
   Client.findById(req.params.clientid, function(err, client) {
@@ -148,15 +134,35 @@ exports.clientEdit = function(req, res) {
 
     else {
 
-      // Assign params to variables. 
-      client.firstname = req.body.firstname;
-      client.lastname  = req.body.lastname;
-      client.phone     = req.body.phone;
-      client.notes     = req.body.notes;
-      client.userid    = req.params.userid;
+      // If userid doesn't exist. 
+      if (!req.params.userid) { res.status(400).send('Error: Userid not found.'); return false; }
+      else { client.userid = req.params.userid; }
 
-      if (req.body.photo)  { client.photo  = req.body.photo;  }
-      if (req.body.avatar) { client.avatar = req.body.avatar; }
+      // If firstname doesn't exist.
+      if (!req.body.firstname) { res.status(400).send('Error: Please include firstname.'); return false; } 
+      else { client.firstname = req.body.firstname; }
+
+      // If lastname doesn't exist.
+      if (!req.body.lastname) { res.status(400).send('Error: Please include lastname.'); return false; }
+      else { client.lastname = req.body.lastname; }
+
+      // If phone doesn't exist.
+      if (!req.body.phone) { client.phone = '1(000)000-0000'; }
+      else { client.phone = req.body.phone; }
+
+      // If photo doesn't exist.
+      if (req.body.photo === 'empty') { client.photo = 'no-photo'; }
+      else if (req.body.photo === 'unchanged') { /* Photo remains the same */ }
+      else { client.photo = req.body.photo; }
+
+      // If avatar doesn't exist.
+      if (req.body.avatar === 'empty') { client.avatar = 'no-avatar'; }
+      else if (req.body.avatar === 'unchanged') { /* Avatar remains the same */ }
+      else { client.avatar = req.body.avatar; }
+
+      // If notes don't exist.
+      if (!req.body.notes) { client.notes = ''; }
+      else { client.notes = req.body.notes; }  
 
       // Save the client and check for errors
       client.save(function(err) {

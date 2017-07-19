@@ -125,6 +125,7 @@ exports.login = function(req, res) {
         res.status(200).json({ 
           token: myToken, 
           id: user._id, 
+          name: user.firstname+' '+ user.lastname
         });
       }
     })

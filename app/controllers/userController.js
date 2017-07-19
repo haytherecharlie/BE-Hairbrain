@@ -86,6 +86,8 @@ exports.register = function(req, res) {
  */
 exports.login = function(req, res) {
 
+  console.log(req.headers);
+
   // Check that phone number exists.
   if (!req.body.phone) { res.status(400).send('Please include a valid phone number'); return false; };
 
@@ -123,11 +125,6 @@ exports.login = function(req, res) {
         res.status(200).json({ 
           token: myToken, 
           id: user._id, 
-          name: user.firstname + ' ' + user.lastname,
-          phone: user.phone,
-          email: user.email, 
-          salon: user.salon,
-          avatar: user.avatar
         });
       }
     })
@@ -191,17 +188,15 @@ exports.removeClientId = function(res, userid, clientid) {
 
 
 /**
- *                   Login
+ *              User Profile
  * ----------------------------------------
- * Log the user into the application.
+ * Get the user profile.
  *-----------------------------------------
  */
 exports.userProfile = function(req, res) {
 
-  console.log(req.params.phone);
-
   // Find the user by their Phone Number.
-  User.findOne({phone: req.params.phone}, function(err, user) {
+  User.findById(req.params.userid, function(err, user) {
  
     // If there's an error send a 400.
     if (err) { res.status(400).send('There was an error, please try again.'); return false; }
@@ -210,7 +205,14 @@ exports.userProfile = function(req, res) {
     if (!user) { res.status(400).send(req.body.phone + ' is not a registered phone number.'); return false; }
 
     // Else send the user.
-    else { res.status(200).json(user); }
+    else { res.status(200).json({
+        name: user.firstname+' '+ user.lastname,
+        phone: user.phone,
+        email: user.email, 
+        salon: user.salon,
+        avatar: user.avatar
+      }); 
+    }
 
   });
 };

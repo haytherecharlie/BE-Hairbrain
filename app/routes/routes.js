@@ -35,7 +35,7 @@ var clientController  = require('../controllers/clientController'),
     .get(userController.isLoggedIn);
 
     // User Profile
-    router.route('/profile/:phone')
+    router.route('/profile/:userid')
     .get(userController.userProfile);
 
 

@@ -8,6 +8,7 @@
 * USER CONTROLLER
 /******************************************/
 
+var appRoot          = require('app-root-path');
 var User             = require('../models/userModel');
 var configJWT        = require('../../config/jwt');
 var jwt              = require('jsonwebtoken');
@@ -24,40 +25,45 @@ var clientController = require('./clientController.js');
  */
 exports.register = function(req, res) {
 
+  // Create a new User based on the User Model.
+  var user = new User();
+
   // Check that first name exists.
   if (!req.body.firstname) { res.status(400).send('You forgot to include your first name.'); return false; }
+  else { user.firstname = req.body.firstname; }
 
   // Check that last name exists.
   if (!req.body.lastname) { res.status(400).send('You forgot to include your last name.'); return false; }
+  else { user.lastname = req.body.lastname; }
 
   // Check that phone number exists.
   if (!req.body.phone) { res.status(400).send('You forgot to include your phone number.'); return false; }
+  else { user.phone = req.body.phone; }
 
   // Check that password exists.
   if (!req.body.password) { res.status(400).send('You forgot to include your password.'); return false; }
 
   // Check that password is between 8 - 16 characters.
   if (req.body.password.length < 8 || req.body.password.length > 16) { res.status(400).send('Password must be between 8 - 16 characters.'); return false; }
+  else { user.password = req.body.password; }
 
   // Check that email exists.
   if (!req.body.email) { res.status(400).send('You forgot to include your email.'); return false; }
+  else { user.email = req.body.email; }
 
   // Check that salon exists. 
   if (!req.body.salon) { res.status(400).send('You forgot to include your salon'); return false; }
+  else { user.salon = req.body.salon; }
+
+  if(!req.body.keyword) { res.status(400).send('You forgot to include the beta keyword'); return false; }
+  if(req.body.keyword !== 'hairbeta') { res.status(400).send('Incorrect beta keyword'); return false; }
 
   // Check that avatar exists.
   if (!req.body.avatar) { res.status(400).send('You forgot to include an avatar.'); return false; }
+  if (req.body.avatar === 'undefined') { user.avatar = 'no-avatar'; }
+  else { user.avatar = req.body.avatar; }
 
-  // Create a new User based on the User Model.
-  var user           = new User();
-  user.firstname     = req.body.firstname;
-  user.lastname      = req.body.lastname;
-  user.phone         = req.body.phone;
-  user.password      = req.body.password;
-  user.email         = req.body.email;
-  user.salon         = req.body.salon;
   user.clients       = [],
-  user.avatar        = req.body.avatar;
   user.accountType   = 'free';
   user.totalClients  = 0;
   user.totalRating   = 0;
@@ -85,8 +91,6 @@ exports.register = function(req, res) {
  *-----------------------------------------
  */
 exports.login = function(req, res) {
-
-  console.log(req.headers);
 
   // Check that phone number exists.
   if (!req.body.phone) { res.status(400).send('Please include a valid phone number'); return false; };
@@ -203,11 +207,10 @@ exports.userProfile = function(req, res) {
     if (err) { res.status(400).send('There was an error, please try again.'); return false; }
 
     // If user doesn't exist send a 400.
-    if (!user) { res.status(400).send(req.body.phone + ' is not a registered phone number.'); return false; }
+    if (!user) { res.status(400).send('Error: User not found'); return false; }
 
     // Else send the user.
     else { res.status(200).json({
-        name: user.firstname+' '+ user.lastname,
         phone: user.phone,
         email: user.email, 
         salon: user.salon,
@@ -217,6 +220,49 @@ exports.userProfile = function(req, res) {
 
   });
 };
+
+
+/**
+ *              User Avatar
+ * ----------------------------------------
+ * Get the user profile.
+ *-----------------------------------------
+ */
+exports.userAvatar = function(req, res) {
+
+  // Find the user by their Phone Number.
+  User.findById(req.params.userid, function(err, user) {
+ 
+    // If there's an error send a 400.
+    if (err) { res.status(400).send('There was an error, please try again.'); return false; }
+
+    // If user doesn't exist send a 400.
+    if (!user) { res.status(400).send('Error: User not found'); return false; }
+
+    // Else send the user.
+    else { 
+
+      if(user.avatar === 'no-avatar') {
+        res.status(200).sendFile(appRoot+'/storage/default_images/defaultavatar.png');
+        return false;
+      }
+
+      else {
+
+        var img = new Buffer(user.avatar.split(',')[1], 'base64');
+
+        res.writeHead(200, {
+           'Content-Type': 'image/jpeg',
+           'Content-Length': img.length
+        });
+
+        res.end(img);
+
+      }
+    }
+  });
+};
+
 
 
 /**

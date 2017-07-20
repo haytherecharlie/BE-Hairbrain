@@ -12,6 +12,11 @@ var appRoot          = require('app-root-path');
 var Client           = require('../models/clientModel');
 var ratingController = require('./ratingController.js');
 var userController   = require('./userController.js');
+var areaCodesCanada  = [403, 587, 780, 825, 236, 250, 604, 778,
+                        204, 431, 506, 709, 902, 782, 226, 249, 
+                        289, 343, 365, 416, 437, 519, 613, 647, 
+                        705, 807, 905, 418, 438, 450, 514, 579, 
+                        581, 819, 873, 306, 639, 867];
 
 
 /**
@@ -22,6 +27,8 @@ var userController   = require('./userController.js');
  * ----------------------------------------
  */
 exports.clientAdd = function(req, res) {
+
+  // console.log(req.headers.origin);
 
   var client = new Client();
 
@@ -66,8 +73,24 @@ exports.clientAdd = function(req, res) {
     // Client was saved to DB.
     else { 
 
-      // Call ratings controller and create a new request.
-      ratingController.newRatingRequest(client.userid, client._id, name, client.phone);
+      // If the phone number is filled fully.
+      if(client.phone.length === 16 && req.headers.origin === 'https://www.hairbrain.ca') {
+        
+        // Get the area code as an int. 
+        var areaCode = parseInt(client.phone.split('').splice(3,3).join(''));
+
+        // Loop Canadian area codes. 
+        for (var i in areaCodesCanada) {
+          
+          // If the areacode is Canadian. 
+          if(areaCode === areaCodesCanada[i]) {
+
+            // Call ratings controller and create a new request.
+            ratingController.newRatingRequest(client.userid, client._id, name, client.phone);
+
+          }
+        }
+      }
 
       // Return the client list. 
       userController.appendClientId(res, client.userid, client._id);
@@ -223,6 +246,85 @@ exports.clientAll = function(req, res) {
 
 };
 
+/**
+ *              Client Avatar
+ * ----------------------------------------
+ * Get the client avatar.
+ *-----------------------------------------
+ */
+exports.clientAvatar = function(req, res) {
+
+  // Find the user by their Phone Number.
+  Client.findById(req.params.clientid, function(err, client) {
+ 
+    // If there's an error send a 400.
+    if (err) { res.status(400).send('There was an error, please try again.'); return false; }
+
+    // If user doesn't exist send a 400.
+    if (!client) { res.status(400).send('Error: Client not found'); return false; }
+
+    // Else send the user.
+    else { 
+
+      if(client.avatar === 'no-avatar') {
+        res.status(200).sendFile(appRoot+'/storage/default_images/defaultavatar.png');
+        return false;
+      }
+
+      else {
+
+        var img = new Buffer(client.avatar.split(',')[1], 'base64');
+        
+        res.writeHead(200, {
+           'Content-Type': 'image/jpeg',
+           'Content-Length': img.length
+        });
+
+        res.end(img);
+      }
+    }
+  });
+};
+
+/**
+ *              Client Photo
+ * ----------------------------------------
+ * Get the client photo.
+ *-----------------------------------------
+ */
+exports.clientPhoto = function(req, res) {
+
+  // Find the user by their Phone Number.
+  Client.findById(req.params.clientid, function(err, client) {
+ 
+    // If there's an error send a 400.
+    if (err) { res.status(400).send('There was an error, please try again.'); return false; }
+
+    // If user doesn't exist send a 400.
+    if (!client) { res.status(400).send('Error: Client not found'); return false; }
+
+    // Else send the user.
+    else { 
+
+      if(client.photo === 'no-photo') {
+        res.status(200).sendFile(appRoot+'/storage/default_images/defaultphoto.png');
+        return false;
+      }
+
+      else {
+        var img = new Buffer(client.photo.split(',')[1], 'base64');
+        
+        res.writeHead(200, {
+           'Content-Type': 'image/jpeg',
+           'Content-Length': img.length
+        });
+
+        res.end(img);
+      }
+    }
+  });
+};
+
 
 /**
  *            ReturnAllClients
@@ -248,9 +350,21 @@ exports.returnAllClients = function(res, userid) {
           var z = b.firstname;
           return y.localeCompare(z);
       });
+
+      var returnedClients = [];
+      for(var i in clients) {
+        returnedClients.push({
+          firstname: clients[i].firstname,
+          lastname:  clients[i].lastname,
+          notes:     clients[i].notes,
+          phone:     clients[i].phone,
+          userid:    clients[i].userid,
+          _id:       clients[i]._id
+        });
+      }
       
       // Send the Clients JSON to the Front End. 
-      res.status(200).json(clients); return false;
+      res.status(200).json(returnedClients); return false;
 
     }
   })

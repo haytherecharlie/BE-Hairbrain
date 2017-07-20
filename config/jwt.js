@@ -12,10 +12,12 @@
 module.exports = {
     'secret'   : 'montreal 2030 rue du fort',
     'except'   : [
-    	new RegExp('/login'), 
-    	new RegExp('/register'), 
-    	new RegExp('/profile.*/', 'i'),
-    	new RegExp('/avatar.*/', 'i'),
+    	new RegExp('/user/login'), 
+    	new RegExp('/user/register'), 
+    	new RegExp('/user/profile.*/', 'i'),
+    	new RegExp('/user/avatar.*/', 'i'),
+    	new RegExp('/client/avatar.*/', 'i'),
+    	new RegExp('/client/photo.*/', 'i'),
     	new RegExp('/rating.*/', 'i')
     ]
 };

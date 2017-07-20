@@ -23,20 +23,23 @@ var clientController  = require('../controllers/clientController'),
     ------------------------------------------------------*/
 
     // Register User
-    router.route('/register')
+    router.route('/user/register')
     .post(userController.register)
 
     // Login User
-    router.route('/login')
+    router.route('/user/login')
     .post(userController.login);
 
     // Check Login Status
-    router.route('/check')
+    router.route('/user/check')
     .get(userController.isLoggedIn);
 
     // User Profile
-    router.route('/profile/:userid')
+    router.route('/user/profile/:userid')
     .get(userController.userProfile);
+
+    router.route('/user/avatar/:userid')
+    .get(userController.userAvatar);
 
 
     /*------------------------------------------------------
@@ -64,6 +67,12 @@ var clientController  = require('../controllers/clientController'),
     // Edit Client   
     router.route('/client/edit/:userid/:clientid') 
     .put(clientController.clientEdit);
+
+    router.route('/client/avatar/:userid/:clientid')
+    .get(clientController.clientAvatar);
+
+    router.route('/client/photo/:userid/:clientid')
+    .get(clientController.clientPhoto);
 
 
     /*------------------------------------------------------

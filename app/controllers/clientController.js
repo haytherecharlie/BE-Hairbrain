@@ -28,8 +28,6 @@ var areaCodesCanada  = [403, 587, 780, 825, 236, 250, 604, 778,
  */
 exports.clientAdd = function(req, res) {
 
-  // console.log(req.headers.origin);
-
   var client = new Client();
 
   // If userid doesn't exist. 
@@ -70,8 +68,7 @@ exports.clientAdd = function(req, res) {
     // Client save failed.
     if (err) { res.status(400).send('Error: Saving client failed.'); return false; }
 
-    // Client was saved to DB.
-    else { 
+    if(req.body.feedback === 'true' ) {
 
       // If the phone number is filled fully.
       if(client.phone.length === 16 && req.headers.origin === 'https://www.hairbrain.ca') {
@@ -193,10 +190,30 @@ exports.clientEdit = function(req, res) {
         // If an error exists send it in the response.
         if (err) { res.status(400).send('Error updating client.'); return false; }
 
-        // else return all clients.
-        else { 
-          exports.returnAllClients(res, client.userid); 
+        // If client feedback request exists.
+        if(req.body.feedback === 'true' ) {
+
+          // If the phone number is filled fully.
+          if(client.phone.length === 16 && req.headers.origin === 'https://www.hairbrain.ca') {
+            
+            // Get the area code as an int. 
+            var areaCode = parseInt(client.phone.split('').splice(3,3).join(''));
+
+            // Loop Canadian area codes. 
+            for (var i in areaCodesCanada) {
+              
+              // If the areacode is Canadian. 
+              if(areaCode === areaCodesCanada[i]) {
+
+                // Call ratings controller and create a new request.
+                ratingController.newRatingRequest(client.userid, client._id, name, client.phone);
+
+              }
+            }
+          }
         }
+
+        exports.returnAllClients(res, client.userid); 
 
       })
     }

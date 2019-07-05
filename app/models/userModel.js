@@ -82,7 +82,7 @@ var UserSchema = new mongoose.Schema({
     }]
   }
 
-});
+}, { usePushEach: true });
 
 // Ensure the Email Address is Unique.
 UserSchema.plugin(uniqueValidator);

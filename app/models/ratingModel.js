@@ -24,7 +24,7 @@ var RatingSchema   = new mongoose.Schema({
   clientid: String,
   name: 	String
 
-});
+}, { usePushEach: true });
 
 // Export the Mongoose model
 module.exports = mongoose.model('Rating', RatingSchema);

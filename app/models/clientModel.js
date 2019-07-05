@@ -27,7 +27,7 @@ var ClientSchema   = new mongoose.Schema({
   userid:    String,
   photo:     String,
   avatar:    String
-});
+}, { usePushEach: true });
 
 
 // Export the Mongoose model
